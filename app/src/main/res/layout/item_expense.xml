@@ -2,15 +2,15 @@
 <com.google.android.material.card.MaterialCardView 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.App.CardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginVertical="4dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/md_theme_light_surface"
+    app:cardBackgroundColor="?attr/colorSurface"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground"
+    android:contentDescription="Expense item">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:id="@+id/typeIndicator"
             android:layout_width="4dp"
             android:layout_height="0dp"
-            android:background="@color/credit_green"
+            android:background="?attr/colorCredit"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
@@ -35,7 +35,7 @@
             android:layout_marginStart="12dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/credit_green_light"
+            app:cardBackgroundColor="?attr/colorCreditContainer"
             app:layout_constraintStart_toEndOf="@id/typeIndicator"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
@@ -46,7 +46,8 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_arrow_upward"
-                app:tint="@color/credit_green" />
+                app:tint="?attr/colorCredit"
+                android:contentDescription="Transaction type icon" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -59,7 +60,7 @@
             android:layout_marginEnd="8dp"
             android:orientation="vertical"
             app:layout_constraintStart_toEndOf="@id/iconCard"
-            app:layout_constraintEnd_toStartOf="@id/amountLayout"
+            app:layout_constraintEnd_toStartOf="@id/moreOptionsButton"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent">
 
@@ -68,9 +69,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Salary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/md_theme_light_onSurface"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorOnSurface"
                 android:maxLines="1"
                 android:ellipsize="end" />
 
@@ -85,8 +85,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="UPI"
-                    android:textSize="12sp"
-                    android:textColor="@color/md_theme_light_onSurfaceVariant"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:background="@drawable/chip_background"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="2dp" />
@@ -96,13 +96,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2 min ago"
-                    android:textSize="12sp"
-                    android:textColor="@color/md_theme_light_onSurfaceVariant"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginStart="8dp" />
 
             </LinearLayout>
 
         </LinearLayout>
+
+        <!-- More Options Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/moreOptionsButton"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            app:icon="@drawable/ic_more_vert"
+            app:iconTint="?attr/colorOnSurfaceVariant"
+            app:iconSize="20dp"
+            android:contentDescription="More options for this transaction"
+            app:layout_constraintEnd_toStartOf="@id/amountLayout"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <!-- Amount Layout -->
         <LinearLayout
@@ -120,18 +135,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="+₹5,000.00"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/credit_green" />
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                android:textColor="?attr/colorCredit" />
 
             <TextView
                 android:id="@+id/txtType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="CREDIT"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:textColor="@color/credit_green"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="?attr/colorCredit"
                 android:layout_marginTop="2dp" />
 
         </LinearLayout>

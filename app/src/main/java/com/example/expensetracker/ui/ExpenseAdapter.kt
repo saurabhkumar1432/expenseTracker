@@ -3,18 +3,24 @@ package com.example.expensetracker.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.R
 import com.example.expensetracker.data.Transaction
 import com.example.expensetracker.data.TransactionType
 import com.example.expensetracker.databinding.ItemExpenseBinding
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-class TransactionAdapter : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
+class TransactionAdapter(
+    private val onEditTransaction: (Transaction) -> Unit = {},
+    private val onDeleteTransaction: (Transaction) -> Unit = {}
+) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
     private val transactions = mutableListOf<Transaction>()
     private val timeFormat = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
 
@@ -52,10 +58,11 @@ class TransactionAdapter : RecyclerView.Adapter<TransactionAdapter.TransactionVi
             binding.txtMode.text = transaction.mode
             binding.txtTime.text = getTimeAgo(transaction.time)
             
-            // Configure based on transaction type
+            // Configure based on transaction type using theme attributes
             when (transaction.type) {
                 TransactionType.CREDIT -> {
                     binding.txtAmount.text = "+₹${String.format("%.2f", transaction.amount)}"
+                    
                     binding.txtAmount.setTextColor(ContextCompat.getColor(context, R.color.credit_green))
                     binding.txtType.text = "INCOME"
                     binding.txtType.setTextColor(ContextCompat.getColor(context, R.color.credit_green))
@@ -75,6 +82,43 @@ class TransactionAdapter : RecyclerView.Adapter<TransactionAdapter.TransactionVi
                     binding.iconTransaction.setColorFilter(ContextCompat.getColor(context, R.color.debit_red))
                 }
             }
+            
+            // Set up more options menu
+            binding.moreOptionsButton.setOnClickListener { view ->
+                showMoreOptionsMenu(view, transaction)
+            }
+        }
+        
+        private fun showMoreOptionsMenu(view: android.view.View, transaction: Transaction) {
+            val popup = PopupMenu(view.context, view)
+            popup.menuInflater.inflate(R.menu.transaction_options, popup.menu)
+            
+            popup.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.action_edit -> {
+                        onEditTransaction(transaction)
+                        true
+                    }
+                    R.id.action_delete -> {
+                        showDeleteConfirmation(view.context, transaction)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
+        
+        private fun showDeleteConfirmation(context: android.content.Context, transaction: Transaction) {
+            MaterialAlertDialogBuilder(context)
+                .setTitle("Delete Transaction")
+                .setMessage("Are you sure you want to delete this ${if (transaction.type == TransactionType.CREDIT) "income" else "expense"} of ₹${String.format("%.2f", transaction.amount)}?\n\nThis action cannot be undone.")
+                .setIcon(R.drawable.ic_delete)
+                .setPositiveButton("Delete") { _, _ ->
+                    onDeleteTransaction(transaction)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
         
         private fun getTimeAgo(timestamp: Long): String {

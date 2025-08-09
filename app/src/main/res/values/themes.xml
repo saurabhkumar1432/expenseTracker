@@ -28,6 +28,12 @@
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+        
+        <!-- Custom semantic colors -->
+        <item name="colorCredit">@color/credit_green</item>
+        <item name="colorDebit">@color/debit_red</item>
+        <item name="colorCreditContainer">@color/credit_green_light</item>
+        <item name="colorDebitContainer">@color/debit_red_light</item>
     </style>
 
     <style name="Theme.ExpenseTracker" parent="Base.Theme.ExpenseTracker" />
@@ -51,6 +57,11 @@
         <item name="android:textSize">14sp</item>
         <item name="cornerRadius">20dp</item>
         <item name="android:minHeight">40dp</item>
+    </style>
+    
+    <style name="Widget.ExpenseTracker.Button.TonalButton" parent="Widget.Material3.Button.TonalButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="android:minHeight">48dp</item>
     </style>
     
     <!-- FAB Style -->

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom theme attributes -->
+    <attr name="colorCredit" format="color" />
+    <attr name="colorDebit" format="color" />
+    <attr name="colorCreditContainer" format="color" />
+    <attr name="colorDebitContainer" format="color" />
+    
+    <!-- Custom component styles -->
+    <declare-styleable name="ExpenseItem">
+        <attr name="expenseAmount" format="string" />
+        <attr name="expenseDescription" format="string" />
+        <attr name="expenseType" format="enum">
+            <enum name="credit" value="0" />
+            <enum name="debit" value="1" />
+        </attr>
+    </declare-styleable>
+</resources>

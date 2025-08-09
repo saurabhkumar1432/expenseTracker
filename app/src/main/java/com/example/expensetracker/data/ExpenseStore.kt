@@ -55,6 +55,40 @@ object TransactionStore {
         )
     }
 
+    fun updateTransaction(ctx: Context, oldTransaction: Transaction, newTransaction: Transaction) {
+        val transactions = getTransactions(ctx).toMutableList()
+        val index = transactions.indexOfFirst { it.id == oldTransaction.id }
+        if (index != -1) {
+            transactions[index] = newTransaction.copy(id = oldTransaction.id, time = oldTransaction.time)
+            rewriteAllTransactions(ctx, transactions)
+        }
+    }
+
+    fun deleteTransaction(ctx: Context, transaction: Transaction) {
+        val transactions = getTransactions(ctx).toMutableList()
+        transactions.removeAll { it.id == transaction.id }
+        rewriteAllTransactions(ctx, transactions)
+    }
+
+    private fun rewriteAllTransactions(ctx: Context, transactions: List<Transaction>) {
+        val f = file(ctx)
+        FileWriter(f, false).use { fw ->
+            transactions.forEach { t ->
+                fw.append(
+                    listOf(
+                        t.id.toString(),
+                        t.amount.toString(),
+                        t.reason.replace('\t',' '),
+                        t.mode.replace('\t',' '),
+                        t.type.name,
+                        t.time.toString()
+                    ).joinToString("\t")
+                )
+                fw.append('\n')
+            }
+        }
+    }
+
     private fun writeAppend(ctx: Context, t: Transaction) {
         val f = file(ctx)
         FileWriter(f, true).use { fw ->

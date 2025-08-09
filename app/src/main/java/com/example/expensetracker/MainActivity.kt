@@ -18,7 +18,10 @@ import com.google.android.material.button.MaterialButtonToggleGroup
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val adapter = TransactionAdapter()
+    private val adapter = TransactionAdapter(
+        onEditTransaction = { transaction -> showEditTransactionDialog(transaction) },
+        onDeleteTransaction = { transaction -> deleteTransaction(transaction) }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +74,10 @@ class MainActivity : AppCompatActivity() {
         binding.btnSettings.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
+        
+        binding.btnGetStarted.setOnClickListener {
+            showAddTransactionDialog()
+        }
     }
 
     private fun refreshData() {
@@ -83,6 +90,17 @@ class MainActivity : AppCompatActivity() {
         // Update transaction list
         adapter.setTransactions(transactions)
         binding.txtTransactionCount.text = "${transactions.size} entries"
+        
+        // Show/hide empty state
+        if (transactions.isEmpty()) {
+            binding.emptyStateLayout.visibility = android.view.View.VISIBLE
+            binding.recyclerTransactions.visibility = android.view.View.GONE
+            binding.transactionHeader.visibility = android.view.View.GONE
+        } else {
+            binding.emptyStateLayout.visibility = android.view.View.GONE
+            binding.recyclerTransactions.visibility = android.view.View.VISIBLE
+            binding.transactionHeader.visibility = android.view.View.VISIBLE
+        }
         
         // Animate summary cards
         animateSummaryCards()
@@ -249,5 +267,148 @@ class MainActivity : AppCompatActivity() {
         }
         
         dialog.show()
+    }
+    
+    private fun showEditTransactionDialog(transaction: com.example.expensetracker.data.Transaction) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_expense, null)
+        val modes = Prefs.getModes(this)
+        
+        // Find views
+        val editAmount = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editAmount)
+        val editReason = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editReason)
+        val spinnerMode = dialogView.findViewById<AutoCompleteTextView>(R.id.spinnerMode)
+        val toggleGroup = dialogView.findViewById<MaterialButtonToggleGroup>(R.id.toggleTransactionType)
+        val btnCancel = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancel)
+        val btnSave = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSave)
+        val btnExpense = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnExpense)
+        val btnIncome = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnIncome)
+        val iconTransactionType = dialogView.findViewById<android.widget.ImageView>(R.id.iconTransactionType)
+        val titleTransaction = dialogView.findViewById<android.widget.TextView>(R.id.titleTransaction)
+        
+        // Pre-fill with existing data
+        editAmount.setText(transaction.amount.toString())
+        editReason.setText(transaction.reason)
+        
+        // Setup dropdown with payment modes
+        val modeAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, modes)
+        spinnerMode.setAdapter(modeAdapter)
+        spinnerMode.setText(transaction.mode, false)
+        
+        // Setup transaction type toggle
+        var selectedType = transaction.type
+        toggleGroup.check(if (transaction.type == TransactionType.CREDIT) R.id.btnIncome else R.id.btnExpense)
+        
+        // Function to update button colors and dialog header
+        fun updateTransactionTypeUI(isCredit: Boolean) {
+            if (isCredit) {
+                btnIncome.setBackgroundColor(getColor(R.color.credit_green_dark))
+                btnIncome.setTextColor(getColor(R.color.white))
+                btnIncome.elevation = 8f
+                btnExpense.setBackgroundColor(getColor(R.color.credit_green_light))
+                btnExpense.setTextColor(getColor(R.color.credit_green))
+                btnExpense.elevation = 0f
+                
+                iconTransactionType.setImageResource(R.drawable.ic_arrow_upward)
+                iconTransactionType.setColorFilter(getColor(R.color.credit_green_dark))
+                titleTransaction.text = "Edit Income"
+                titleTransaction.setTextColor(getColor(R.color.credit_green_dark))
+            } else {
+                btnExpense.setBackgroundColor(getColor(R.color.debit_red_dark))
+                btnExpense.setTextColor(getColor(R.color.white))
+                btnExpense.elevation = 8f
+                btnIncome.setBackgroundColor(getColor(R.color.debit_red_light))
+                btnIncome.setTextColor(getColor(R.color.debit_red))
+                btnIncome.elevation = 0f
+                
+                iconTransactionType.setImageResource(R.drawable.ic_arrow_downward)
+                iconTransactionType.setColorFilter(getColor(R.color.debit_red_dark))
+                titleTransaction.text = "Edit Expense"
+                titleTransaction.setTextColor(getColor(R.color.debit_red_dark))
+            }
+        }
+        
+        // Set initial state
+        updateTransactionTypeUI(selectedType == TransactionType.CREDIT)
+        
+        toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                selectedType = if (checkedId == R.id.btnIncome) {
+                    updateTransactionTypeUI(true)
+                    TransactionType.CREDIT
+                } else {
+                    updateTransactionTypeUI(false)
+                    TransactionType.DEBIT
+                }
+            }
+        }
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .create()
+        
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        
+        btnSave.setOnClickListener {
+            val amountStr = editAmount.text.toString().trim()
+            val reason = editReason.text.toString().trim().ifEmpty { 
+                if (selectedType == TransactionType.CREDIT) "Income" else "Expense" 
+            }
+            val mode = spinnerMode.text.toString().trim()
+            
+            // Validate input
+            if (amountStr.isEmpty()) {
+                editAmount.error = "Amount is required"
+                return@setOnClickListener
+            }
+            
+            val amount = amountStr.toDoubleOrNull()
+            if (amount == null || amount <= 0) {
+                editAmount.error = "Please enter a valid amount"
+                return@setOnClickListener
+            }
+            
+            if (mode.isEmpty()) {
+                Toast.makeText(this, "Please select a payment method", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
+            // Update transaction
+            val updatedTransaction = transaction.copy(
+                amount = amount,
+                reason = reason,
+                mode = mode,
+                type = selectedType
+            )
+            
+            TransactionStore.updateTransaction(this, transaction, updatedTransaction)
+            refreshData()
+            dialog.dismiss()
+            
+            // Show success message with Snackbar
+            com.google.android.material.snackbar.Snackbar.make(
+                binding.root,
+                "Transaction updated successfully!",
+                com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
+            ).show()
+        }
+        
+        dialog.show()
+    }
+    
+    private fun deleteTransaction(transaction: com.example.expensetracker.data.Transaction) {
+        TransactionStore.deleteTransaction(this, transaction)
+        refreshData()
+        
+        // Show success message with undo option
+        com.google.android.material.snackbar.Snackbar.make(
+            binding.root,
+            "Transaction deleted",
+            com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+        ).setAction("UNDO") {
+            TransactionStore.addTransaction(this, transaction.amount, transaction.reason, transaction.mode, transaction.type)
+            refreshData()
+        }.show()
     }
 }
