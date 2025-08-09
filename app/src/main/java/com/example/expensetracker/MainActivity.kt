@@ -119,6 +119,10 @@ class MainActivity : AppCompatActivity() {
         val toggleGroup = dialogView.findViewById<MaterialButtonToggleGroup>(R.id.toggleTransactionType)
         val btnCancel = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancel)
         val btnSave = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSave)
+        val btnExpense = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnExpense)
+        val btnIncome = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnIncome)
+        val iconTransactionType = dialogView.findViewById<android.widget.ImageView>(R.id.iconTransactionType)
+        val titleTransaction = dialogView.findViewById<android.widget.TextView>(R.id.titleTransaction)
         
         // Quick amount buttons
         val btnAmount50 = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnAmount50)
@@ -137,6 +141,52 @@ class MainActivity : AppCompatActivity() {
         var selectedType = TransactionType.DEBIT
         toggleGroup.check(R.id.btnExpense)
         
+        // Function to update button colors and dialog header
+        fun updateTransactionTypeUI(isCredit: Boolean) {
+            if (isCredit) {
+                // Income selected - update colors with animation
+                btnIncome.setBackgroundColor(getColor(R.color.credit_green_dark))
+                btnIncome.setTextColor(getColor(R.color.white))
+                btnIncome.elevation = 8f
+                btnExpense.setBackgroundColor(getColor(R.color.credit_green_light))
+                btnExpense.setTextColor(getColor(R.color.credit_green))
+                btnExpense.elevation = 0f
+                
+                // Update header with animation
+                iconTransactionType.setImageResource(R.drawable.ic_arrow_upward)
+                iconTransactionType.setColorFilter(getColor(R.color.credit_green_dark))
+                titleTransaction.text = "Add Income"
+                titleTransaction.setTextColor(getColor(R.color.credit_green_dark))
+                
+                // Animate icon
+                iconTransactionType.animate().scaleX(1.2f).scaleY(1.2f).setDuration(200).withEndAction {
+                    iconTransactionType.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                }.start()
+            } else {
+                // Expense selected - update colors with animation
+                btnExpense.setBackgroundColor(getColor(R.color.debit_red_dark))
+                btnExpense.setTextColor(getColor(R.color.white))
+                btnExpense.elevation = 8f
+                btnIncome.setBackgroundColor(getColor(R.color.debit_red_light))
+                btnIncome.setTextColor(getColor(R.color.debit_red))
+                btnIncome.elevation = 0f
+                
+                // Update header with animation
+                iconTransactionType.setImageResource(R.drawable.ic_arrow_downward)
+                iconTransactionType.setColorFilter(getColor(R.color.debit_red_dark))
+                titleTransaction.text = "Add Expense"
+                titleTransaction.setTextColor(getColor(R.color.debit_red_dark))
+                
+                // Animate icon
+                iconTransactionType.animate().scaleX(1.2f).scaleY(1.2f).setDuration(200).withEndAction {
+                    iconTransactionType.animate().scaleX(1f).scaleY(1f).setDuration(200).start()
+                }.start()
+            }
+        }
+        
+        // Set initial state (expense)
+        updateTransactionTypeUI(false)
+        
         // Quick amount button listeners for Indian currency
         btnAmount50.setOnClickListener { editAmount.setText("50") }
         btnAmount100.setOnClickListener { editAmount.setText("100") }
@@ -146,8 +196,10 @@ class MainActivity : AppCompatActivity() {
         toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 selectedType = if (checkedId == R.id.btnIncome) {
+                    updateTransactionTypeUI(true)
                     TransactionType.CREDIT
                 } else {
+                    updateTransactionTypeUI(false)
                     TransactionType.DEBIT
                 }
             }

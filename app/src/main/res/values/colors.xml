@@ -28,8 +28,10 @@
     <color name="md_theme_light_inversePrimary">#D0BCFF</color>
     <color name="credit_green">#4CAF50</color>
     <color name="credit_green_light">#E8F5E8</color>
+    <color name="credit_green_dark">#2E7D32</color>
     <color name="debit_red">#F44336</color>
     <color name="debit_red_light">#FFEBEE</color>
+    <color name="debit_red_dark">#C62828</color>
     <color name="gradient_start">#667eea</color>
     <color name="gradient_end">#764ba2</color>
     <color name="ic_launcher_background">#FFFFFF</color>

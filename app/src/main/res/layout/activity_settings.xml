@@ -71,7 +71,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Customize your payment methods for quick expense tracking"
+                        android:text="Manage your payment methods easily with our improved interface"
                         android:textSize="14sp"
                         android:textColor="@color/md_theme_light_onPrimaryContainer" />
 
@@ -79,7 +79,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Edit Payment Methods Card -->
+            <!-- Payment Methods Display Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Edit Payment Methods"
+                        android:text="Your Payment Methods"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/md_theme_light_onSurface"
@@ -105,33 +105,23 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Add or remove payment methods (one per line)"
+                        android:text="Tap 'Add Method' to add new payment methods, or long-press the list to edit existing ones"
                         android:textSize="14sp"
                         android:textColor="@color/md_theme_light_onSurfaceVariant"
                         android:layout_marginBottom="16dp" />
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <EditText
+                        android:id="@+id/editModes"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Payment Methods"
-                        app:helperText="Examples: Cash, UPI, Credit Card, Bank Transfer"
-                        app:helperTextTextColor="@color/md_theme_light_onSurfaceVariant"
-                        app:boxStrokeColor="@color/gradient_start"
-                        app:hintTextColor="@color/gradient_start"
-                        app:startIconDrawable="@drawable/ic_payment"
-                        app:startIconTint="@color/gradient_start"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/editModes"
-                            android:layout_width="match_parent"
-                            android:layout_height="200dp"
-                            android:gravity="top|start"
-                            android:inputType="textMultiLine"
-                            android:textSize="16sp"
-                            android:lineSpacingExtra="4dp" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_height="200dp"
+                        android:gravity="top|start"
+                        android:background="@drawable/rounded_background"
+                        android:padding="16dp"
+                        android:textSize="16sp"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:longClickable="true"
+                        android:hint="No payment methods added yet.\n\nTap 'Add Method' to get started!" />
 
                 </LinearLayout>
 
@@ -153,12 +143,12 @@
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Save Changes"
+            android:text="Add Method"
             android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="@color/gradient_start"
             app:cornerRadius="28dp"
-            app:icon="@drawable/ic_settings"
+            app:icon="@drawable/ic_add"
             app:iconGravity="start" />
 
     </LinearLayout>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <!-- Payment Method Icon -->
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_payment"
+            android:tint="@color/gradient_start"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/md_theme_light_primaryContainer"
+            android:padding="8dp"
+            android:layout_marginEnd="16dp" />
+
+        <!-- Payment Method Name -->
+        <TextView
+            android:id="@+id/txtPaymentMethodName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cash"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/md_theme_light_onSurface" />
+
+        <!-- Edit Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditPaymentMethod"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:icon="@drawable/ic_settings"
+            app:iconTint="@color/md_theme_light_onSurfaceVariant"
+            app:backgroundTint="@color/transparent"
+            android:layout_marginEnd="4dp" />
+
+        <!-- Delete Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDeletePaymentMethod"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:icon="@drawable/ic_arrow_downward"
+            app:iconTint="@color/debit_red"
+            app:backgroundTint="@color/transparent" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
