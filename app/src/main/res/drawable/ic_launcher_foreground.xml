@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Simple minimal icon: currency-like circle with a bar -->
+    <path
+        android:fillColor="#3700B3"
+        android:pathData="M54,12A42,42 0 1 0 54,96A42,42 0 1 0 54,12Z"/>
+    <path
+        android:strokeWidth="6"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:pathData="M46,36L64,36M46,54L64,54M46,72L64,72"/>
+</vector>
