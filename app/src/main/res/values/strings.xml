@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ExpenseTracker</string>
+    
+    <!-- Accessibility descriptions -->
+    <string name="desc_app_icon">ExpenseTracker app icon</string>
+    <string name="desc_payment_method_icon">Payment method icon</string>
+    <string name="desc_payment_methods">Payment methods</string>
+    <string name="desc_more_options">More options</string>
+    <string name="desc_drag_to_reorder">Drag to reorder</string>
+    <string name="desc_no_payment_methods">No payment methods illustration</string>
+    
+    <!-- Onboarding -->
+    <string name="onboarding_title">Welcome to ExpenseTracker</string>
+    <string name="onboarding_subtitle">Track expenses effortlessly</string>
+    <string name="onboarding_payment_title">Choose Your Payment Methods</string>
+    <string name="onboarding_payment_subtitle">Select the payment methods you use most often</string>
+    <string name="popular_methods">Popular Methods</string>
+    <string name="custom_methods">Custom Methods</string>
+    <string name="add_custom_method">Add Custom Method</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="get_started">Get Started</string>
+    
+    <!-- Settings -->
+    <string name="payment_methods">Payment Methods</string>
+    <string name="manage_payment_methods">Manage Payment Methods</string>
+    <string name="manage_payment_methods_desc">Add, edit, or remove your payment options</string>
+    <string name="your_payment_methods">Your Payment Methods</string>
+    <string name="no_payment_methods">No Payment Methods</string>
+    <string name="no_payment_methods_desc">Add your first payment method using the + button below</string>
+    <string name="add_payment_method">Add Payment Method</string>
+    
+    <!-- Add/Edit Dialog -->
+    <string name="add_payment_method_title">Add Payment Method</string>
+    <string name="edit_payment_method_title">Edit Payment Method</string>
+    <string name="payment_method_name_hint">Payment method name</string>
+    <string name="payment_method_desc">Enter the name of your payment method</string>
+    <string name="quick_select">Quick Select</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_method">Add Method</string>
+    <string name="save_changes">Save Changes</string>
+    
+    <!-- Common payment methods -->
+    <string name="cash">Cash</string>
+    <string name="upi">UPI</string>
+    <string name="credit_card">Credit Card</string>
+    <string name="debit_card">Debit Card</string>
+    <string name="net_banking">Net Banking</string>
+    <string name="phonepe">PhonePe</string>
+    <string name="google_pay">Google Pay</string>
+    <string name="paytm">Paytm</string>
+    
+    <!-- Actions -->
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="delete_payment_method">Delete Payment Method</string>
+    <string name="delete_payment_method_confirm">Are you sure you want to delete this payment method?</string>
+    <string name="payment_method_added">Payment method added</string>
+    <string name="payment_method_updated">Payment method updated</string>
+    <string name="payment_method_deleted">Payment method deleted</string>
+    <string name="undo">Undo</string>
+</resources>

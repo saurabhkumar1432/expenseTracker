@@ -4,20 +4,35 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.R
-import com.example.expensetracker.databinding.ItemPaymentMethodBinding
+import com.example.expensetracker.databinding.ItemPaymentMethodModernBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class PaymentMethodAdapter(
+class PaymentMethodModernAdapter(
     private val paymentMethods: MutableList<String>,
     private val onEdit: (Int, String) -> Unit,
     private val onDelete: (Int) -> Unit
-) : RecyclerView.Adapter<PaymentMethodAdapter.PaymentMethodViewHolder>() {
+) : RecyclerView.Adapter<PaymentMethodModernAdapter.PaymentMethodViewHolder>() {
 
-    inner class PaymentMethodViewHolder(private val binding: ItemPaymentMethodBinding) :
+    // Map payment method names to appropriate icons
+    private fun getIconForPaymentMethod(method: String): Int {
+        return when (method.lowercase()) {
+            "cash" -> R.drawable.ic_money
+            "upi", "phonepe", "google pay", "paytm", "gpay" -> R.drawable.ic_smartphone
+            "credit card", "debit card" -> R.drawable.ic_credit_card
+            "net banking", "bank" -> R.drawable.ic_account_balance
+            else -> R.drawable.ic_payment
+        }
+    }
+
+    inner class PaymentMethodViewHolder(private val binding: ItemPaymentMethodModernBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(paymentMethod: String, position: Int) {
             binding.txtPaymentMethodName.text = paymentMethod
+            
+            // Set appropriate icon based on payment method type
+            val iconRes = getIconForPaymentMethod(paymentMethod)
+            binding.imgPaymentMethodIcon.setImageResource(iconRes)
             
             // More options button click - shows popup menu
             binding.btnMoreOptions.setOnClickListener { view ->
@@ -30,15 +45,7 @@ class PaymentMethodAdapter(
                                 true
                             }
                             R.id.action_delete -> {
-                                // Show confirmation dialog for delete
-                                MaterialAlertDialogBuilder(view.context)
-                                    .setTitle("Delete Payment Method")
-                                    .setMessage("Are you sure you want to delete '$paymentMethod'?")
-                                    .setPositiveButton("Delete") { _, _ ->
-                                        onDelete(position)
-                                    }
-                                    .setNegativeButton("Cancel", null)
-                                    .show()
+                                onDelete(position)
                                 true
                             }
                             else -> false
@@ -51,7 +58,7 @@ class PaymentMethodAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentMethodViewHolder {
-        val binding = ItemPaymentMethodBinding.inflate(
+        val binding = ItemPaymentMethodModernBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -64,20 +71,4 @@ class PaymentMethodAdapter(
     }
 
     override fun getItemCount(): Int = paymentMethods.size
-
-    fun addPaymentMethod(method: String) {
-        paymentMethods.add(method)
-        notifyItemInserted(paymentMethods.size - 1)
-    }
-
-    fun editPaymentMethod(position: Int, newMethod: String) {
-        paymentMethods[position] = newMethod
-        notifyItemChanged(position)
-    }
-
-    fun removePaymentMethod(position: Int) {
-        paymentMethods.removeAt(position)
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, paymentMethods.size)
-    }
 }

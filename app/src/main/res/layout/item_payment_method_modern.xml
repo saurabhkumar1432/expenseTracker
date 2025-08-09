@@ -13,6 +13,19 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Drag Handle (for reordering) -->
+        <ImageView
+            android:id="@+id/imgDragHandle"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_drag_handle"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="@string/desc_drag_to_reorder"
+            android:alpha="0.6"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
         <!-- Payment Method Icon -->
         <ImageView
             android:id="@+id/imgPaymentMethodIcon"
@@ -23,24 +36,42 @@
             android:contentDescription="@string/desc_payment_method_icon"
             android:padding="8dp"
             android:src="@drawable/ic_payment"
+            android:layout_marginStart="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imgDragHandle"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="?attr/colorOnPrimaryContainer" />
 
-        <!-- Payment Method Name -->
-        <TextView
-            android:id="@+id/txtPaymentMethodName"
+        <!-- Payment Method Details -->
+        <LinearLayout
+            android:id="@+id/layoutPaymentDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnMoreOptions"
             app:layout_constraintStart_toEndOf="@id/imgPaymentMethodIcon"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Cash" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/txtPaymentMethodName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                tools:text="Cash" />
+
+            <TextView
+                android:id="@+id/txtPaymentMethodType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                tools:text="Physical currency"
+                android:visibility="gone" />
+
+        </LinearLayout>
 
         <!-- More Options Button -->
         <com.google.android.material.button.MaterialButton

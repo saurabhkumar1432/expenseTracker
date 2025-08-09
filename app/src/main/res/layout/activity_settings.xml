@@ -19,7 +19,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_settings"
-            android:tint="@color/white"
+            app:tint="@color/white"
             android:layout_marginEnd="12dp" />
 
         <TextView
@@ -65,7 +65,7 @@
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:src="@drawable/ic_payment"
-                        android:tint="@color/md_theme_light_onPrimaryContainer"
+                        app:tint="@color/md_theme_light_onPrimaryContainer"
                         android:layout_marginEnd="12dp" />
 
                     <TextView

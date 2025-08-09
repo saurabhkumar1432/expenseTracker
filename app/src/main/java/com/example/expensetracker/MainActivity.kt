@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         
         // Check onboarding
         if (!Prefs.isOnboarded(this)) {
-            startActivity(Intent(this, OnboardingActivity::class.java))
+            startActivity(Intent(this, OnboardingModernActivity::class.java))
             finish()
             return
         }
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         binding.btnSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, SettingsModernActivity::class.java))
         }
         
         binding.btnGetStarted.setOnClickListener {
