@@ -17,166 +17,113 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Transaction Type Indicator -->
+        <!-- Compact Transaction Icon -->
         <View
-            android:id="@+id/typeIndicator"
-            android:layout_width="4dp"
-            android:layout_height="0dp"
-            android:background="?attr/colorCredit"
+            android:id="@+id/iconBackground"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="?attr/colorCreditContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
-        <!-- Transaction Icon -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/iconCard"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="12dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="?attr/colorCreditContainer"
-            app:layout_constraintStart_toEndOf="@id/typeIndicator"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <ImageView
-                android:id="@+id/iconTransaction"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_arrow_upward"
-                app:tint="?attr/colorCredit"
-                android:contentDescription="Transaction type icon" />
-
-        </com.google.android.material.card.MaterialCardView>
+        <ImageView
+            android:id="@+id/iconTransaction"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_arrow_upward"
+            app:tint="?attr/colorCredit"
+            android:contentDescription="Transaction type"
+            app:layout_constraintStart_toStartOf="@id/iconBackground"
+            app:layout_constraintEnd_toEndOf="@id/iconBackground"
+            app:layout_constraintTop_toTopOf="@id/iconBackground"
+            app:layout_constraintBottom_toBottomOf="@id/iconBackground" />
 
         <!-- Transaction Details -->
-        <LinearLayout
-            android:id="@+id/detailsLayout"
+        <TextView
+            android:id="@+id/txtReason"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
-            android:orientation="vertical"
-            app:layout_constraintStart_toEndOf="@id/iconCard"
-            app:layout_constraintEnd_toStartOf="@id/moreOptionsButton"
+            android:text="Salary"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/iconBackground"
+            app:layout_constraintEnd_toStartOf="@id/txtAmount"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintHorizontal_bias="0" />
+
+        <LinearLayout
+            android:id="@+id/metaLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintStart_toEndOf="@id/iconBackground"
+            app:layout_constraintEnd_toStartOf="@id/txtAmount"
+            app:layout_constraintTop_toBottomOf="@id/txtReason">
 
             <TextView
-                android:id="@+id/txtReason"
-                android:layout_width="match_parent"
+                android:id="@+id/txtMode"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Salary"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface"
+                android:text="UPI"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:background="@drawable/chip_background"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="1dp"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="12sp"
-                android:autoSizeMaxTextSize="16sp"
-                android:autoSizeStepGranularity="1sp" />
+                android:textSize="10sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <View
+                android:layout_width="3dp"
+                android:layout_height="3dp"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/circle_background"
+                android:backgroundTint="?attr/colorOnSurfaceVariant" />
+
+            <TextView
+                android:id="@+id/txtTime"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="4dp">
-
-                <TextView
-                    android:id="@+id/txtMode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="UPI"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:background="@drawable/chip_background"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:autoSizeTextType="uniform"
-                    android:autoSizeMinTextSize="8sp"
-                    android:autoSizeMaxTextSize="12sp"
-                    android:autoSizeStepGranularity="1sp" />
-
-                <TextView
-                    android:id="@+id/txtTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="2 min ago"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginStart="8dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:autoSizeTextType="uniform"
-                    android:autoSizeMinTextSize="8sp"
-                    android:autoSizeMaxTextSize="12sp"
-                    android:autoSizeStepGranularity="1sp" />
-
-            </LinearLayout>
+                android:layout_weight="1"
+                android:text="2 min ago"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="10sp" />
 
         </LinearLayout>
 
-        <!-- More Options Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/moreOptionsButton"
-            style="@style/Widget.Material3.Button.IconButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            app:icon="@drawable/ic_more_vert"
-            app:iconTint="?attr/colorOnSurfaceVariant"
-            app:iconSize="20dp"
-            android:contentDescription="More options for this transaction"
-            app:layout_constraintEnd_toStartOf="@id/amountLayout"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <!-- Amount Layout -->
-        <LinearLayout
-            android:id="@+id/amountLayout"
+        <!-- Amount -->
+        <TextView
+            android:id="@+id/txtAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end"
+            android:text="+₹5K"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            android:textColor="?attr/colorCredit"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:autoSizeTextType="uniform"
+            android:autoSizeMinTextSize="12sp"
+            android:autoSizeMaxTextSize="16sp"
+            android:autoSizeStepGranularity="1sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <TextView
-                android:id="@+id/txtAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+₹5,000.00"
-                android:textAppearance="?attr/textAppearanceTitleLarge"
-                android:textColor="?attr/colorCredit"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="14sp"
-                android:autoSizeMaxTextSize="20sp"
-                android:autoSizeStepGranularity="1sp" />
-
-            <TextView
-                android:id="@+id/txtType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CREDIT"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="?attr/colorCredit"
-                android:layout_marginTop="2dp"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="8sp"
-                android:autoSizeMaxTextSize="12sp"
-                android:autoSizeStepGranularity="1sp" />
-
-        </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

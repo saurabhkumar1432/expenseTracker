@@ -61,58 +61,38 @@ class TransactionAdapter(
             // Configure based on transaction type using theme attributes
             when (transaction.type) {
                 TransactionType.CREDIT -> {
-                    binding.txtAmount.text = "+₹${String.format("%.2f", transaction.amount)}"
-                    
+                    // Use smart currency formatting from MainActivity
+                    binding.txtAmount.text = "+${formatCurrency(transaction.amount)}"
                     binding.txtAmount.setTextColor(ContextCompat.getColor(context, R.color.credit_green))
-                    binding.txtType.text = "INCOME"
-                    binding.txtType.setTextColor(ContextCompat.getColor(context, R.color.credit_green))
-                    binding.typeIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.credit_green))
-                    binding.iconCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.credit_green_light))
+                    binding.iconBackground.backgroundTintList = ContextCompat.getColorStateList(context, R.color.credit_green_light)
                     binding.iconTransaction.setImageResource(R.drawable.ic_arrow_upward)
                     binding.iconTransaction.setColorFilter(ContextCompat.getColor(context, R.color.credit_green))
                 }
                 TransactionType.DEBIT -> {
-                    binding.txtAmount.text = "-₹${String.format("%.2f", transaction.amount)}"
+                    binding.txtAmount.text = "-${formatCurrency(transaction.amount)}"
                     binding.txtAmount.setTextColor(ContextCompat.getColor(context, R.color.debit_red))
-                    binding.txtType.text = "EXPENSE"
-                    binding.txtType.setTextColor(ContextCompat.getColor(context, R.color.debit_red))
-                    binding.typeIndicator.setBackgroundColor(ContextCompat.getColor(context, R.color.debit_red))
-                    binding.iconCard.setCardBackgroundColor(ContextCompat.getColor(context, R.color.debit_red_light))
+                    binding.iconBackground.backgroundTintList = ContextCompat.getColorStateList(context, R.color.debit_red_light)
                     binding.iconTransaction.setImageResource(R.drawable.ic_arrow_downward)
                     binding.iconTransaction.setColorFilter(ContextCompat.getColor(context, R.color.debit_red))
                 }
             }
             
-            // Set up more options menu
-            binding.moreOptionsButton.setOnClickListener { view ->
-                showMoreOptionsMenu(view, transaction)
+            // Set up item click for editing (removed more options button)
+            binding.root.setOnClickListener {
+                onEditTransaction(transaction)
             }
-        }
-        
-        private fun showMoreOptionsMenu(view: android.view.View, transaction: Transaction) {
-            val popup = PopupMenu(view.context, view)
-            popup.menuInflater.inflate(R.menu.transaction_options, popup.menu)
             
-            popup.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.action_edit -> {
-                        onEditTransaction(transaction)
-                        true
-                    }
-                    R.id.action_delete -> {
-                        showDeleteConfirmation(view.context, transaction)
-                        true
-                    }
-                    else -> false
-                }
+            // Set up long click for delete
+            binding.root.setOnLongClickListener {
+                showDeleteConfirmation(binding.root.context, transaction)
+                true
             }
-            popup.show()
         }
         
         private fun showDeleteConfirmation(context: android.content.Context, transaction: Transaction) {
             MaterialAlertDialogBuilder(context)
                 .setTitle("Delete Transaction")
-                .setMessage("Are you sure you want to delete this ${if (transaction.type == TransactionType.CREDIT) "income" else "expense"} of ₹${String.format("%.2f", transaction.amount)}?\n\nThis action cannot be undone.")
+                .setMessage("Are you sure you want to delete this ${if (transaction.type == TransactionType.CREDIT) "income" else "expense"} of ${formatCurrency(transaction.amount)}?\n\nThis action cannot be undone.")
                 .setIcon(R.drawable.ic_delete)
                 .setPositiveButton("Delete") { _, _ ->
                     onDeleteTransaction(transaction)
@@ -131,6 +111,15 @@ class TransactionAdapter(
                 diff < TimeUnit.DAYS.toMillis(1) -> "${TimeUnit.MILLISECONDS.toHours(diff)} hours ago"
                 diff < TimeUnit.DAYS.toMillis(7) -> "${TimeUnit.MILLISECONDS.toDays(diff)} days ago"
                 else -> timeFormat.format(Date(timestamp))
+            }
+        }
+        
+        private fun formatCurrency(amount: Double): String {
+            return when {
+                amount >= 10000000 -> "₹%.1fCr".format(amount / 10000000)
+                amount >= 100000 -> "₹%.1fL".format(amount / 100000)
+                amount >= 1000 -> "₹%.1fK".format(amount / 1000)
+                else -> "₹%.0f".format(amount)
             }
         }
     }
