@@ -56,12 +56,16 @@
 
                 <!-- Balance Card -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardBalance"
                     style="@style/Widget.App.CardView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    app:cardBackgroundColor="?attr/colorSurface">
+                    app:cardBackgroundColor="?attr/colorSurface"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -98,12 +102,16 @@
 
                 <!-- Credit Card -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardIncome"
                     style="@style/Widget.App.CardView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="4dp"
-                    app:cardBackgroundColor="?attr/colorCreditContainer">
+                    app:cardBackgroundColor="?attr/colorCreditContainer"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -140,12 +148,16 @@
 
                 <!-- Debit Card -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardExpense"
                     style="@style/Widget.App.CardView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    app:cardBackgroundColor="?attr/colorDebitContainer">
+                    app:cardBackgroundColor="?attr/colorDebitContainer"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"

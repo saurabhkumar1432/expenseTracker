@@ -78,6 +78,19 @@ class MainActivity : AppCompatActivity() {
         binding.btnGetStarted.setOnClickListener {
             showAddTransactionDialog()
         }
+        
+        // Add click listener to balance cards for detailed view
+        binding.cardBalance.setOnClickListener {
+            showDetailedBalanceDialog()
+        }
+        
+        binding.cardIncome.setOnClickListener {
+            showDetailedBalanceDialog()
+        }
+        
+        binding.cardExpense.setOnClickListener {
+            showDetailedBalanceDialog()
+        }
     }
 
     private fun refreshData() {
@@ -128,6 +141,52 @@ class MainActivity : AppCompatActivity() {
             amount >= 1000 -> "₹${String.format("%.1f", amount / 1000)}K" // Thousands
             else -> "₹${String.format("%.0f", amount)}" // Regular
         }
+    }
+
+    private fun formatExactCurrency(amount: Double): String {
+        return if (amount % 1.0 == 0.0) {
+            // No decimal places needed
+            "₹${String.format("%.0f", amount)}"
+        } else {
+            // Show up to 2 decimal places, removing trailing zeros
+            "₹${String.format("%.2f", amount).trimEnd('0').trimEnd('.')}"
+        }
+    }
+
+    private fun showDetailedBalanceDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_detailed_balance, null)
+        val summary = TransactionStore.getSummary(this)
+        
+        // Find views
+        val txtDetailedBalance = dialogView.findViewById<android.widget.TextView>(R.id.txtDetailedBalance)
+        val txtDetailedIncome = dialogView.findViewById<android.widget.TextView>(R.id.txtDetailedIncome)
+        val txtDetailedExpense = dialogView.findViewById<android.widget.TextView>(R.id.txtDetailedExpense)
+        
+        // Set exact values without rounding
+        txtDetailedBalance.text = formatExactCurrency(summary.balance)
+        txtDetailedIncome.text = formatExactCurrency(summary.totalCredit)
+        txtDetailedExpense.text = formatExactCurrency(summary.totalDebit)
+        
+        // Color code balance based on positive/negative
+        val balanceColor = if (summary.balance >= 0) {
+            getColor(R.color.credit_green)
+        } else {
+            getColor(R.color.debit_red)
+        }
+        txtDetailedBalance.setTextColor(balanceColor)
+        
+        // Create and show the dialog
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .setPositiveButton("Close", null)
+            .create()
+            
+        dialog.show()
+        
+        // Add entrance animation to the content
+        val slideIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left)
+        slideIn.duration = 300
+        dialogView.startAnimation(slideIn)
     }
 
     private fun animateSummaryCards() {
