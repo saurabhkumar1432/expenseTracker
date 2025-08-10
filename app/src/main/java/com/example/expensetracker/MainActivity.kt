@@ -107,9 +107,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateFinancialSummary(summary: com.example.expensetracker.data.FinancialSummary) {
-        binding.txtBalance.text = "₹${String.format("%.2f", summary.balance)}"
-        binding.txtCredit.text = "₹${String.format("%.2f", summary.totalCredit)}"
-        binding.txtDebit.text = "₹${String.format("%.2f", summary.totalDebit)}"
+        // Format numbers with proper Indian currency formatting
+        binding.txtBalance.text = formatCurrency(summary.balance)
+        binding.txtCredit.text = formatCurrency(summary.totalCredit)
+        binding.txtDebit.text = formatCurrency(summary.totalDebit)
         
         // Color code balance based on positive/negative
         val balanceColor = if (summary.balance >= 0) {
@@ -118,6 +119,15 @@ class MainActivity : AppCompatActivity() {
             getColor(R.color.debit_red)
         }
         binding.txtBalance.setTextColor(balanceColor)
+    }
+
+    private fun formatCurrency(amount: Double): String {
+        return when {
+            amount >= 10000000 -> "₹${String.format("%.1f", amount / 10000000)}Cr" // Crores
+            amount >= 100000 -> "₹${String.format("%.1f", amount / 100000)}L" // Lakhs
+            amount >= 1000 -> "₹${String.format("%.1f", amount / 1000)}K" // Thousands
+            else -> "₹${String.format("%.0f", amount)}" // Regular
+        }
     }
 
     private fun animateSummaryCards() {

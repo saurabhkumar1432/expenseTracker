@@ -79,12 +79,19 @@
 
                         <TextView
                             android:id="@+id/txtBalance"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="₹0.00"
                             android:textAppearance="?attr/textAppearanceTitleLarge"
                             android:textColor="?attr/colorPrimary"
-                            android:layout_marginTop="4dp" />
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="18sp"
+                            android:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -114,12 +121,19 @@
 
                         <TextView
                             android:id="@+id/txtCredit"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="₹0.00"
                             android:textAppearance="?attr/textAppearanceTitleLarge"
                             android:textColor="?attr/colorCredit"
-                            android:layout_marginTop="4dp" />
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="18sp"
+                            android:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -149,12 +163,19 @@
 
                         <TextView
                             android:id="@+id/txtDebit"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="₹0.00"
                             android:textAppearance="?attr/textAppearanceTitleLarge"
                             android:textColor="?attr/colorDebit"
-                            android:layout_marginTop="4dp" />
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="18sp"
+                            android:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
