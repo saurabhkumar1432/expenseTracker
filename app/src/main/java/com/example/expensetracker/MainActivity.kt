@@ -10,9 +10,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.expensetracker.data.TransactionStore
 import com.example.expensetracker.data.TransactionType
+import com.example.expensetracker.data.Transaction
 import com.example.expensetracker.data.Prefs
 import com.example.expensetracker.databinding.ActivityMainBinding
 import com.example.expensetracker.ui.TransactionAdapter
+import com.example.expensetracker.ui.FilterAdapter
+import com.example.expensetracker.ui.FilterOption
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.button.MaterialButtonToggleGroup
 
@@ -22,6 +25,10 @@ class MainActivity : AppCompatActivity() {
         onEditTransaction = { transaction -> showEditTransactionDialog(transaction) },
         onDeleteTransaction = { transaction -> deleteTransaction(transaction) }
     )
+    
+    // Filter related properties
+    private var allTransactions = emptyList<Transaction>()
+    private var selectedPaymentMethods = emptySet<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,21 +98,51 @@ class MainActivity : AppCompatActivity() {
         binding.cardExpense.setOnClickListener {
             showDetailedBalanceDialog()
         }
+        
+        // Add filter button click listener
+        binding.btnFilter.setOnClickListener {
+            showFilterDialog()
+        }
     }
 
     private fun refreshData() {
         val summary = TransactionStore.getSummary(this)
-        val transactions = TransactionStore.getTransactions(this)
+        allTransactions = TransactionStore.getTransactions(this)
         
         // Update financial summary with animations
         updateFinancialSummary(summary)
         
+        // Apply current filter and update transaction list
+        applyFilter()
+        
+        // Animate summary cards
+        animateSummaryCards()
+    }
+    
+    private fun applyFilter() {
+        val filteredTransactions = if (selectedPaymentMethods.isEmpty()) {
+            allTransactions
+        } else {
+            allTransactions.filter { it.mode in selectedPaymentMethods }
+        }
+        
         // Update transaction list
-        adapter.setTransactions(transactions)
-        binding.txtTransactionCount.text = "${transactions.size} entries"
+        adapter.setTransactions(filteredTransactions)
+        
+        // Update transaction count
+        val totalCount = allTransactions.size
+        val filteredCount = filteredTransactions.size
+        binding.txtTransactionCount.text = if (selectedPaymentMethods.isEmpty()) {
+            "$totalCount entries"
+        } else {
+            "$filteredCount of $totalCount entries"
+        }
+        
+        // Update filter status
+        updateFilterStatus()
         
         // Show/hide empty state
-        if (transactions.isEmpty()) {
+        if (filteredTransactions.isEmpty()) {
             binding.emptyStateLayout.visibility = android.view.View.VISIBLE
             binding.recyclerTransactions.visibility = android.view.View.GONE
             binding.transactionHeader.visibility = android.view.View.GONE
@@ -114,9 +151,22 @@ class MainActivity : AppCompatActivity() {
             binding.recyclerTransactions.visibility = android.view.View.VISIBLE
             binding.transactionHeader.visibility = android.view.View.VISIBLE
         }
-        
-        // Animate summary cards
-        animateSummaryCards()
+    }
+    
+    private fun updateFilterStatus() {
+        if (selectedPaymentMethods.isEmpty()) {
+            binding.txtFilterStatus.visibility = android.view.View.GONE
+            // Reset to default theme color - use null to let theme handle it
+            binding.btnFilter.iconTint = null
+        } else {
+            binding.txtFilterStatus.visibility = android.view.View.VISIBLE
+            binding.txtFilterStatus.text = "${selectedPaymentMethods.size} selected"
+            // Use primary color to indicate active filter
+            val typedValue = android.util.TypedValue()
+            theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+            val primaryColor = android.content.res.ColorStateList.valueOf(typedValue.data)
+            binding.btnFilter.iconTint = primaryColor
+        }
     }
 
     private fun updateFinancialSummary(summary: com.example.expensetracker.data.FinancialSummary) {
@@ -195,6 +245,65 @@ class MainActivity : AppCompatActivity() {
         binding.txtBalance.startAnimation(fadeIn)
         binding.txtCredit.startAnimation(fadeIn)
         binding.txtDebit.startAnimation(fadeIn)
+    }
+    
+    private fun showFilterDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_filter_transactions, null)
+        
+        // Find views
+        val recyclerFilterOptions = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerFilterOptions)
+        val btnClearFilter = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnClearFilter)
+        val btnApplyFilter = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilter)
+        
+        // Setup RecyclerView
+        recyclerFilterOptions.layoutManager = LinearLayoutManager(this)
+        val filterAdapter = FilterAdapter {
+            // Update apply button state when selection changes
+        }
+        recyclerFilterOptions.adapter = filterAdapter
+        
+        // Get payment methods with their transaction counts
+        val paymentMethodCounts = allTransactions.groupBy { it.mode }
+            .map { (method, transactions) -> 
+                FilterOption(
+                    paymentMethod = method,
+                    transactionCount = transactions.size,
+                    isSelected = method in selectedPaymentMethods
+                )
+            }
+            .sortedByDescending { it.transactionCount }
+        
+        filterAdapter.setFilterOptions(paymentMethodCounts)
+        
+        // Create and show dialog
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogView)
+            .create()
+            
+        // Setup button listeners
+        btnClearFilter.setOnClickListener {
+            filterAdapter.clearAll()
+        }
+        
+        btnApplyFilter.setOnClickListener {
+            selectedPaymentMethods = filterAdapter.getSelectedMethods().toSet()
+            applyFilter()
+            dialog.dismiss()
+            
+            // Show success message
+            if (selectedPaymentMethods.isEmpty()) {
+                Toast.makeText(this, "Filter cleared", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Filter applied to ${selectedPaymentMethods.size} payment methods", Toast.LENGTH_SHORT).show()
+            }
+        }
+        
+        dialog.show()
+        
+        // Add entrance animation
+        val slideIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left)
+        slideIn.duration = 300
+        dialogView.startAnimation(slideIn)
     }    private fun showAddTransactionDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_expense, null)
         val modes = Prefs.getModes(this)
