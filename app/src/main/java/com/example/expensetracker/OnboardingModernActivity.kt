@@ -20,9 +20,7 @@ class OnboardingModernActivity : AppCompatActivity() {
         "Credit Card" to R.drawable.ic_credit_card,
         "Debit Card" to R.drawable.ic_credit_card,
         "Net Banking" to R.drawable.ic_account_balance,
-        "PhonePe" to R.drawable.ic_smartphone,
-        "Google Pay" to R.drawable.ic_smartphone,
-        "Paytm" to R.drawable.ic_smartphone
+        "Digital Wallet" to R.drawable.ic_smartphone
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

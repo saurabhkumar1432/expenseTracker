@@ -201,7 +201,7 @@ class SettingsModernActivity : AppCompatActivity() {
     }
     
     private fun setupQuickSelectChips(dialogBinding: DialogAddEditPaymentMethodBinding) {
-        val commonMethods = listOf("Cash", "UPI", "Credit Card", "Debit Card", "Net Banking")
+        val commonMethods = listOf("Cash", "UPI", "Credit Card", "Debit Card", "Net Banking", "Digital Wallet")
         
         commonMethods.forEach { method ->
             val chip = com.google.android.material.chip.Chip(this).apply {

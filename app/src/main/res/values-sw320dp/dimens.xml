@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dimension overrides for small width devices (320dp and up) -->
+    
+    <!-- Reduced header padding for small screens -->
+    <dimen name="header_padding_horizontal">16dp</dimen>
+    <dimen name="header_padding_top">12dp</dimen>
+    <dimen name="header_padding_bottom">16dp</dimen>
+    <dimen name="header_min_height">140dp</dimen>
+    
+    <!-- Card dimensions -->
+    <dimen name="summary_card_padding_horizontal">10dp</dimen>
+    <dimen name="summary_card_padding_vertical">10dp</dimen>
+    <dimen name="summary_card_min_height">64dp</dimen>
+    <dimen name="summary_card_margin">2dp</dimen>
+    
+    <!-- Text sizes for small screens -->
+    <dimen name="title_text_size">20sp</dimen>
+    <dimen name="card_label_text_size">10sp</dimen>
+    <dimen name="card_value_text_size">14sp</dimen>
+    <dimen name="card_amount_text_size">14sp</dimen>
+    
+    <!-- Dialog dimensions -->
+    <dimen name="dialog_padding">16dp</dimen>
+    <dimen name="dialog_max_height">350dp</dimen>
+    <dimen name="recycler_max_height">180dp</dimen>
+</resources>

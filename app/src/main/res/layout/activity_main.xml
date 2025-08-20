@@ -17,31 +17,41 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/gradient_header"
-            android:padding="24dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            android:paddingHorizontal="@dimen/header_padding_horizontal"
+            android:paddingTop="@dimen/header_padding_top"
+            android:paddingBottom="@dimen/header_padding_bottom"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:minHeight="@dimen/header_min_height">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="My Wallet"
-                    android:textAppearance="?attr/textAppearanceHeadlineMedium"
-                    android:textColor="@color/white" />
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:textColor="@color/white"
+                    android:autoSizeTextType="uniform"
+                    android:autoSizeMinTextSize="18sp"
+                    android:autoSizeMaxTextSize="24sp"
+                    android:autoSizeStepGranularity="1sp"
+                    android:maxLines="1" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSettings"
                     style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     app:icon="@drawable/ic_settings"
                     app:iconTint="@color/white"
                     app:backgroundTint="@color/transparent"
+                    app:iconSize="20dp"
                     android:contentDescription="Settings" />
 
             </LinearLayout>
@@ -51,8 +61,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="24dp"
-                android:weightSum="3">
+                android:weightSum="3"
+                android:layout_marginTop="8dp">
 
                 <!-- Balance Card -->
                 <com.google.android.material.card.MaterialCardView
@@ -61,7 +71,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="@dimen/summary_card_margin"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
                     app:cardBackgroundColor="?attr/colorSurface"
                     android:clickable="true"
                     android:focusable="true"
@@ -71,30 +83,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
+                        android:paddingHorizontal="@dimen/summary_card_padding_horizontal"
+                        android:paddingVertical="@dimen/summary_card_padding_vertical"
+                        android:gravity="center"
+                        android:minHeight="@dimen/summary_card_min_height">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Balance"
-                            android:textAppearance="?attr/textAppearanceLabelMedium"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="8sp"
+                            android:autoSizeMaxTextSize="@dimen/card_label_text_size"
+                            android:maxLines="1" />
 
                         <TextView
                             android:id="@+id/txtBalance"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="₹0.00"
-                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:textColor="?attr/colorPrimary"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="2dp"
                             android:gravity="center"
                             android:maxLines="1"
                             android:ellipsize="end"
                             android:autoSizeTextType="uniform"
-                            android:autoSizeMinTextSize="12sp"
-                            android:autoSizeMaxTextSize="18sp"
+                            android:autoSizeMinTextSize="10sp"
+                            android:autoSizeMaxTextSize="@dimen/card_amount_text_size"
                             android:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
@@ -107,7 +125,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginHorizontal="4dp"
+                    android:layout_marginHorizontal="@dimen/summary_card_margin"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
                     app:cardBackgroundColor="?attr/colorCreditContainer"
                     android:clickable="true"
                     android:focusable="true"
@@ -117,30 +137,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
+                        android:paddingHorizontal="@dimen/summary_card_padding_horizontal"
+                        android:paddingVertical="@dimen/summary_card_padding_vertical"
+                        android:gravity="center"
+                        android:minHeight="@dimen/summary_card_min_height">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Income"
-                            android:textAppearance="?attr/textAppearanceLabelMedium"
-                            android:textColor="?attr/colorCredit" />
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="?attr/colorCredit"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="8sp"
+                            android:autoSizeMaxTextSize="@dimen/card_label_text_size"
+                            android:maxLines="1" />
 
                         <TextView
                             android:id="@+id/txtCredit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="₹0.00"
-                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:textColor="?attr/colorCredit"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="2dp"
                             android:gravity="center"
                             android:maxLines="1"
                             android:ellipsize="end"
                             android:autoSizeTextType="uniform"
-                            android:autoSizeMinTextSize="12sp"
-                            android:autoSizeMaxTextSize="18sp"
+                            android:autoSizeMinTextSize="10sp"
+                            android:autoSizeMaxTextSize="@dimen/card_amount_text_size"
                             android:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
@@ -153,7 +179,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="@dimen/summary_card_margin"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
                     app:cardBackgroundColor="?attr/colorDebitContainer"
                     android:clickable="true"
                     android:focusable="true"
@@ -163,30 +191,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
+                        android:paddingHorizontal="@dimen/summary_card_padding_horizontal"
+                        android:paddingVertical="@dimen/summary_card_padding_vertical"
+                        android:gravity="center"
+                        android:minHeight="@dimen/summary_card_min_height">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Expense"
-                            android:textAppearance="?attr/textAppearanceLabelMedium"
-                            android:textColor="?attr/colorDebit" />
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="?attr/colorDebit"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="8sp"
+                            android:autoSizeMaxTextSize="@dimen/card_label_text_size"
+                            android:maxLines="1" />
 
                         <TextView
                             android:id="@+id/txtDebit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="₹0.00"
-                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:textColor="?attr/colorDebit"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="2dp"
                             android:gravity="center"
                             android:maxLines="1"
                             android:ellipsize="end"
                             android:autoSizeTextType="uniform"
-                            android:autoSizeMinTextSize="12sp"
-                            android:autoSizeMaxTextSize="18sp"
+                            android:autoSizeMinTextSize="10sp"
+                            android:autoSizeMaxTextSize="@dimen/card_amount_text_size"
                             android:autoSizeStepGranularity="1sp" />
 
                     </LinearLayout>
