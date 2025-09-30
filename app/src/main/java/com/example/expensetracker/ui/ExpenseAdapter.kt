@@ -56,7 +56,19 @@ class TransactionAdapter(
             // Set basic transaction details
             binding.txtReason.text = if (transaction.reason.isBlank()) "No description" else transaction.reason
             binding.txtMode.text = transaction.mode
+            binding.txtCategory.text = if (transaction.category.isBlank()) "Uncategorized" else transaction.category
             binding.txtTime.text = getTimeAgo(transaction.time)
+            
+            // Tint category chip background for quick visual identification
+            try {
+                val catColor = com.example.expensetracker.ui.CategoryUtils.getColorForCategory(context, binding.txtCategory.text.toString())
+                binding.txtCategory.backgroundTintList = android.content.res.ColorStateList.valueOf(catColor)
+                // Adjust text color for readability
+                val luminance = (android.graphics.Color.red(catColor) * 0.299 + android.graphics.Color.green(catColor) * 0.587 + android.graphics.Color.blue(catColor) * 0.114)
+                binding.txtCategory.setTextColor(if (luminance < 150) android.graphics.Color.WHITE else android.graphics.Color.DKGRAY)
+            } catch (e: Exception) {
+                // ignore color issues
+            }
             
             // Configure based on transaction type using theme attributes
             when (transaction.type) {

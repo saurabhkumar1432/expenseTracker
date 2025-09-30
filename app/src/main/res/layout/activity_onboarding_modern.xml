@@ -200,6 +200,106 @@
                     android:layout_height="wrap_content"
                     android:text="Add Custom Method"
                     app:icon="@drawable/ic_add"
+                    app:iconGravity="start"
+                    android:layout_marginBottom="32dp" />
+
+                <!-- Categories Section -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="?attr/colorOutlineVariant"
+                    android:layout_marginBottom="24dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Choose Your Expense Categories"
+                    android:textAppearance="?attr/textAppearanceTitleLarge"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select categories to organize your expenses"
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:gravity="center"
+                    android:layout_marginBottom="24dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Popular Categories"
+                    android:textAppearance="?attr/textAppearanceLabelLarge"
+                    android:textColor="?attr/colorPrimary"
+                    android:layout_marginBottom="12dp" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupCategories"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="4dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFood"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Food"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        app:chipIcon="@drawable/ic_money" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFashion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fashion"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        app:chipIcon="@drawable/ic_payment" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipTransport"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Transport"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        app:chipIcon="@drawable/ic_currency" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGroceries"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Groceries"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        app:chipIcon="@drawable/ic_description" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBills"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bills"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        app:chipIcon="@drawable/ic_account_balance" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOther"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Other"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        app:chipIcon="@drawable/ic_settings" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddCustomCategory"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add Custom Category"
+                    app:icon="@drawable/ic_add"
                     app:iconGravity="start" />
 
             </LinearLayout>

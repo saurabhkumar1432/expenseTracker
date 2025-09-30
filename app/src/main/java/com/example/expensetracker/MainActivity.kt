@@ -29,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     // Filter related properties
     private var allTransactions = emptyList<Transaction>()
     private var selectedPaymentMethods = emptySet<String>()
+    private var selectedCategories = emptySet<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +43,10 @@ class MainActivity : AppCompatActivity() {
         
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
+        // Load saved filter selections
+        selectedPaymentMethods = Prefs.getSelectedPaymentFilters(this).toSet()
+        selectedCategories = Prefs.getSelectedCategoryFilters(this).toSet()
         
         setupUI()
         setupRecyclerView()
@@ -109,6 +114,10 @@ class MainActivity : AppCompatActivity() {
         val summary = TransactionStore.getSummary(this)
         allTransactions = TransactionStore.getTransactions(this)
         
+        // Load persisted filter selections
+        selectedPaymentMethods = Prefs.getSelectedPaymentFilters(this).toSet()
+        selectedCategories = Prefs.getSelectedCategoryFilters(this).toSet()
+        
         // Update financial summary with animations
         updateFinancialSummary(summary)
         
@@ -120,47 +129,53 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun applyFilter() {
-        val filteredTransactions = if (selectedPaymentMethods.isEmpty()) {
-            allTransactions
-        } else {
-            allTransactions.filter { it.mode in selectedPaymentMethods }
+        val filteredTransactions = allTransactions.filter { t ->
+            val methodMatch = selectedPaymentMethods.isEmpty() || t.mode in selectedPaymentMethods
+            val categoryMatch = selectedCategories.isEmpty() || t.category in selectedCategories
+            methodMatch && categoryMatch
         }
-        
-        // Update transaction list
-        adapter.setTransactions(filteredTransactions)
-        
-        // Update transaction count
-        val totalCount = allTransactions.size
-        val filteredCount = filteredTransactions.size
-        binding.txtTransactionCount.text = if (selectedPaymentMethods.isEmpty()) {
-            "$totalCount entries"
-        } else {
-            "$filteredCount of $totalCount entries"
-        }
-        
-        // Update filter status
-        updateFilterStatus()
-        
-        // Show/hide empty state
-        if (filteredTransactions.isEmpty()) {
-            binding.emptyStateLayout.visibility = android.view.View.VISIBLE
-            binding.recyclerTransactions.visibility = android.view.View.GONE
-            binding.transactionHeader.visibility = android.view.View.GONE
-        } else {
-            binding.emptyStateLayout.visibility = android.view.View.GONE
-            binding.recyclerTransactions.visibility = android.view.View.VISIBLE
-            binding.transactionHeader.visibility = android.view.View.VISIBLE
-        }
+         
+         // Update transaction list
+         adapter.setTransactions(filteredTransactions)
+         
+         // Update transaction count
+         val totalCount = allTransactions.size
+         val filteredCount = filteredTransactions.size
+         binding.txtTransactionCount.text = if (selectedPaymentMethods.isEmpty()) {
+             "$totalCount entries"
+         } else {
+             "$filteredCount of $totalCount entries"
+         }
+         
+         // Update filter status
+         updateFilterStatus()
+         // Update summary to reflect filtered transactions
+         val filteredSummary = TransactionStore.computeSummary(filteredTransactions)
+         updateFinancialSummary(filteredSummary)
+         
+         // Show/hide empty state
+         if (filteredTransactions.isEmpty()) {
+             binding.emptyStateLayout.visibility = android.view.View.VISIBLE
+             binding.recyclerTransactions.visibility = android.view.View.GONE
+             binding.transactionHeader.visibility = android.view.View.GONE
+         } else {
+             binding.emptyStateLayout.visibility = android.view.View.GONE
+             binding.recyclerTransactions.visibility = android.view.View.VISIBLE
+             binding.transactionHeader.visibility = android.view.View.VISIBLE
+         }
     }
     
     private fun updateFilterStatus() {
-        if (selectedPaymentMethods.isEmpty()) {
+        if (selectedPaymentMethods.isEmpty() && selectedCategories.isEmpty()) {
             binding.txtFilterStatus.visibility = android.view.View.GONE
             // Reset to default theme color - use null to let theme handle it
             binding.btnFilter.iconTint = null
         } else {
             binding.txtFilterStatus.visibility = android.view.View.VISIBLE
-            binding.txtFilterStatus.text = "${selectedPaymentMethods.size} selected"
+            val methodPart = if (selectedPaymentMethods.isNotEmpty()) "${selectedPaymentMethods.size} method(s)" else ""
+            val categoryPart = if (selectedCategories.isNotEmpty()) "${selectedCategories.size} category(s)" else ""
+            val combined = listOf(methodPart, categoryPart).filter { it.isNotBlank() }.joinToString(", ")
+            binding.txtFilterStatus.text = combined
             // Use primary color to indicate active filter
             val typedValue = android.util.TypedValue()
             theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
@@ -262,6 +277,12 @@ class MainActivity : AppCompatActivity() {
         }
         recyclerFilterOptions.adapter = filterAdapter
         
+        // Categories
+        val recyclerCategoryOptions = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerCategoryOptions)
+        recyclerCategoryOptions.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        val categoryAdapter = FilterAdapter { }
+        recyclerCategoryOptions.adapter = categoryAdapter
+        
         // Get payment methods with their transaction counts
         val paymentMethodCounts = allTransactions.groupBy { it.mode }
             .map { (method, transactions) -> 
@@ -275,6 +296,18 @@ class MainActivity : AppCompatActivity() {
         
         filterAdapter.setFilterOptions(paymentMethodCounts)
         
+        // Get categories with counts
+        val categoryCounts = allTransactions.groupBy { it.category }
+            .map { (cat, transactions) ->
+                FilterOption(
+                    paymentMethod = cat,
+                    transactionCount = transactions.size,
+                    isSelected = cat in selectedCategories
+                )
+            }
+            .sortedByDescending { it.transactionCount }
+        categoryAdapter.setFilterOptions(categoryCounts)
+        
         // Create and show dialog
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
@@ -283,19 +316,24 @@ class MainActivity : AppCompatActivity() {
         // Setup button listeners
         btnClearFilter.setOnClickListener {
             filterAdapter.clearAll()
+            categoryAdapter.clearAll()
+            // Clear persisted filters as well
+            Prefs.saveSelectedFilters(this, emptyList(), emptyList())
         }
         
         btnApplyFilter.setOnClickListener {
             selectedPaymentMethods = filterAdapter.getSelectedMethods().toSet()
+            selectedCategories = categoryAdapter.getSelectedMethods().toSet()
+            // Persist selected filters
+            Prefs.saveSelectedFilters(this, selectedPaymentMethods.toList(), selectedCategories.toList())
             applyFilter()
             dialog.dismiss()
             
             // Show success message
-            if (selectedPaymentMethods.isEmpty()) {
-                Toast.makeText(this, "Filter cleared", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Filter applied to ${selectedPaymentMethods.size} payment methods", Toast.LENGTH_SHORT).show()
-            }
+            val methodMsg = if (selectedPaymentMethods.isEmpty()) "" else "${selectedPaymentMethods.size} payment method(s)"
+            val catMsg = if (selectedCategories.isEmpty()) "" else "${selectedCategories.size} category(s)"
+            val msg = listOf(methodMsg, catMsg).filter { it.isNotBlank() }.joinToString(", ").ifEmpty { "Filter cleared" }
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
         }
         
         dialog.show()
@@ -307,11 +345,13 @@ class MainActivity : AppCompatActivity() {
     }    private fun showAddTransactionDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_expense, null)
         val modes = Prefs.getModes(this)
+        val categories = Prefs.getCategories(this)
         
         // Find views - using the correct types from the Material Design layout
         val editAmount = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editAmount)
         val editReason = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editReason)
         val spinnerMode = dialogView.findViewById<AutoCompleteTextView>(R.id.spinnerMode)
+        val spinnerCategory = dialogView.findViewById<AutoCompleteTextView>(R.id.spinnerCategory)
         val toggleGroup = dialogView.findViewById<MaterialButtonToggleGroup>(R.id.toggleTransactionType)
         val btnCancel = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancel)
         val btnSave = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSave)
@@ -331,6 +371,12 @@ class MainActivity : AppCompatActivity() {
         spinnerMode.setAdapter(modeAdapter)
         if (modes.isNotEmpty()) {
             spinnerMode.setText(modes[0], false)
+        }
+        // Setup dropdown with categories
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
+        spinnerCategory.setAdapter(categoryAdapter)
+        if (categories.isNotEmpty()) {
+            spinnerCategory.setText(categories[0], false)
         }
         
         // Setup transaction type toggle (default to expense)
@@ -416,6 +462,7 @@ class MainActivity : AppCompatActivity() {
                 if (selectedType == TransactionType.CREDIT) "Income" else "Expense" 
             }
             val mode = spinnerMode.text.toString().trim()
+            val category = spinnerCategory.text.toString().trim().ifEmpty { "Uncategorized" }
             
             // Validate input
             if (amountStr.isEmpty()) {
@@ -435,7 +482,7 @@ class MainActivity : AppCompatActivity() {
             }
             
             // Add transaction
-            TransactionStore.addTransaction(this, amount, reason, mode, selectedType)
+            TransactionStore.addTransaction(this, amount, reason, mode, category, selectedType)
             refreshData()
             dialog.dismiss()
             
@@ -450,11 +497,13 @@ class MainActivity : AppCompatActivity() {
     private fun showEditTransactionDialog(transaction: com.example.expensetracker.data.Transaction) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_expense, null)
         val modes = Prefs.getModes(this)
+        val categories = Prefs.getCategories(this)
         
         // Find views
         val editAmount = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editAmount)
         val editReason = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.editReason)
         val spinnerMode = dialogView.findViewById<AutoCompleteTextView>(R.id.spinnerMode)
+        val spinnerCategory = dialogView.findViewById<AutoCompleteTextView>(R.id.spinnerCategory)
         val toggleGroup = dialogView.findViewById<MaterialButtonToggleGroup>(R.id.toggleTransactionType)
         val btnCancel = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancel)
         val btnSave = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSave)
@@ -471,6 +520,10 @@ class MainActivity : AppCompatActivity() {
         val modeAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, modes)
         spinnerMode.setAdapter(modeAdapter)
         spinnerMode.setText(transaction.mode, false)
+        // Setup dropdown with categories
+        val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categories)
+        spinnerCategory.setAdapter(categoryAdapter)
+        spinnerCategory.setText(transaction.category, false)
         
         // Setup transaction type toggle
         var selectedType = transaction.type
@@ -534,6 +587,7 @@ class MainActivity : AppCompatActivity() {
                 if (selectedType == TransactionType.CREDIT) "Income" else "Expense" 
             }
             val mode = spinnerMode.text.toString().trim()
+            val category = spinnerCategory.text.toString().trim().ifEmpty { "Uncategorized" }
             
             // Validate input
             if (amountStr.isEmpty()) {
@@ -553,11 +607,14 @@ class MainActivity : AppCompatActivity() {
             }
             
             // Update transaction
-            val updatedTransaction = transaction.copy(
+            val updatedTransaction = com.example.expensetracker.data.Transaction(
+                id = transaction.id,
                 amount = amount,
                 reason = reason,
                 mode = mode,
-                type = selectedType
+                category = category,
+                type = selectedType,
+                time = transaction.time
             )
             
             TransactionStore.updateTransaction(this, transaction, updatedTransaction)
@@ -585,8 +642,8 @@ class MainActivity : AppCompatActivity() {
             "Transaction deleted",
             com.google.android.material.snackbar.Snackbar.LENGTH_LONG
         ).setAction("UNDO") {
-            TransactionStore.addTransaction(this, transaction.amount, transaction.reason, transaction.mode, transaction.type)
-            refreshData()
-        }.show()
+            TransactionStore.addTransaction(this, transaction.amount, transaction.reason, transaction.mode, transaction.category, transaction.type)
+             refreshData()
+         }.show()
     }
 }

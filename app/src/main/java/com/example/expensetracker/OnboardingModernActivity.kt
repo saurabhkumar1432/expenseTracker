@@ -12,6 +12,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class OnboardingModernActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingModernBinding
     private val selectedPaymentMethods = mutableSetOf<String>()
+    private val selectedCategories = mutableSetOf<String>()
     
     // Predefined popular payment methods
     private val popularMethods = listOf(
@@ -37,6 +38,7 @@ class OnboardingModernActivity : AppCompatActivity() {
         setContentView(binding.root)
         
         setupPopularChips()
+        setupCategoryChips()
         setupClickListeners()
         updateContinueButton()
     }
@@ -66,15 +68,48 @@ class OnboardingModernActivity : AppCompatActivity() {
         }
     }
     
+    private fun setupCategoryChips() {
+        // Setup category chips with checked listeners
+        binding.chipFood.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) selectedCategories.add("Food") else selectedCategories.remove("Food")
+            updateContinueButton()
+        }
+        binding.chipFashion.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) selectedCategories.add("Fashion") else selectedCategories.remove("Fashion")
+            updateContinueButton()
+        }
+        binding.chipTransport.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) selectedCategories.add("Transport") else selectedCategories.remove("Transport")
+            updateContinueButton()
+        }
+        binding.chipGroceries.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) selectedCategories.add("Groceries") else selectedCategories.remove("Groceries")
+            updateContinueButton()
+        }
+        binding.chipBills.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) selectedCategories.add("Bills") else selectedCategories.remove("Bills")
+            updateContinueButton()
+        }
+        binding.chipOther.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) selectedCategories.add("Other") else selectedCategories.remove("Other")
+            updateContinueButton()
+        }
+    }
+    
     private fun setupClickListeners() {
         binding.btnAddCustom.setOnClickListener {
             showAddCustomMethodDialog()
         }
         
+        binding.btnAddCustomCategory.setOnClickListener {
+            showAddCustomCategoryDialog()
+        }
+        
         binding.btnSkip.setOnClickListener {
-            // Skip onboarding - use default methods
+            // Skip onboarding - use default methods and categories
             val defaultMethods = listOf("Cash", "UPI", "Credit Card")
-            saveAndContinue(defaultMethods)
+            val defaultCategories = listOf("Food", "Fashion", "Other")
+            saveAndContinue(defaultMethods, defaultCategories)
         }
         
         binding.btnContinue.setOnClickListener {
@@ -82,7 +117,11 @@ class OnboardingModernActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please select at least one payment method", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            saveAndContinue(selectedPaymentMethods.toList())
+            if (selectedCategories.isEmpty()) {
+                Toast.makeText(this, "Please select at least one category", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            saveAndContinue(selectedPaymentMethods.toList(), selectedCategories.toList())
         }
     }
     
@@ -105,6 +144,33 @@ class OnboardingModernActivity : AppCompatActivity() {
                     Toast.makeText(this, "'$methodName' added!", Toast.LENGTH_SHORT).show()
                 } else if (selectedPaymentMethods.contains(methodName)) {
                     Toast.makeText(this, "This method already exists!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Please enter a valid name!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+    
+    private fun showAddCustomCategoryDialog() {
+        val input = android.widget.EditText(this).apply {
+            hint = "Enter category name"
+            setPadding(48, 32, 48, 32)
+        }
+        
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Add Custom Category")
+            .setMessage("Enter a custom expense category")
+            .setView(input)
+            .setPositiveButton("Add") { _, _ ->
+                val categoryName = input.text.toString().trim()
+                if (categoryName.isNotEmpty() && !selectedCategories.contains(categoryName)) {
+                    addCustomCategoryChip(categoryName)
+                    selectedCategories.add(categoryName)
+                    updateContinueButton()
+                    Toast.makeText(this, "'$categoryName' added!", Toast.LENGTH_SHORT).show()
+                } else if (selectedCategories.contains(categoryName)) {
+                    Toast.makeText(this, "This category already exists!", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Please enter a valid name!", Toast.LENGTH_SHORT).show()
                 }
@@ -140,28 +206,58 @@ class OnboardingModernActivity : AppCompatActivity() {
         binding.chipGroupCustom.addView(chip)
     }
     
+    private fun addCustomCategoryChip(categoryName: String) {
+        val chip = Chip(this).apply {
+            text = categoryName
+            isCheckable = true
+            isChecked = true
+            setChipIconResource(R.drawable.ic_settings)
+            chipIconTint = getColorStateList(R.color.md_theme_light_onSurfaceVariant)
+            isCloseIconVisible = true
+            
+            setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    selectedCategories.add(categoryName)
+                } else {
+                    selectedCategories.remove(categoryName)
+                }
+                updateContinueButton()
+            }
+            
+            setOnCloseIconClickListener {
+                selectedCategories.remove(categoryName)
+                binding.chipGroupCategories.removeView(this)
+                updateContinueButton()
+            }
+        }
+        binding.chipGroupCategories.addView(chip)
+    }
+    
     private fun updateContinueButton() {
-        val hasSelection = selectedPaymentMethods.isNotEmpty()
+        val hasSelection = selectedPaymentMethods.isNotEmpty() && selectedCategories.isNotEmpty()
         binding.btnContinue.isEnabled = hasSelection
         binding.btnContinue.alpha = if (hasSelection) 1.0f else 0.6f
         
         val buttonText = if (hasSelection) {
-            "Get Started (${selectedPaymentMethods.size} selected)"
+            "Get Started (${selectedPaymentMethods.size} methods, ${selectedCategories.size} categories)"
         } else {
             "Get Started"
         }
         binding.btnContinue.text = buttonText
     }
     
-    private fun saveAndContinue(methods: List<String>) {
+    private fun saveAndContinue(methods: List<String>, categories: List<String>) {
         // Save payment methods
         Prefs.saveModes(this, methods)
+        
+        // Save categories
+        Prefs.saveCategories(this, categories)
         
         // Mark as onboarded
         Prefs.setOnboarded(this)
         
         // Show success message
-        Toast.makeText(this, "Setup complete! ${methods.size} payment methods saved.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Setup complete! ${methods.size} payment methods and ${categories.size} categories saved.", Toast.LENGTH_SHORT).show()
         
         // Navigate to main activity
         startActivity(Intent(this, MainActivity::class.java))

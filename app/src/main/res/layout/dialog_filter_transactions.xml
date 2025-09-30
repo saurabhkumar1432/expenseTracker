@@ -58,6 +58,24 @@
         android:nestedScrollingEnabled="true"
         android:scrollbars="vertical" />
 
+    <!-- Category Filter Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Category"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
+        android:textColor="?attr/colorOnSurface"
+        android:layout_marginBottom="12dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCategoryOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="@dimen/recycler_max_height"
+        android:layout_marginBottom="16dp"
+        android:nestedScrollingEnabled="true"
+        android:scrollbars="vertical" />
+
     <!-- Action Buttons - Full width on small screens -->
     <LinearLayout
         android:layout_width="match_parent"

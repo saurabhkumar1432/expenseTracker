@@ -14,9 +14,10 @@ object TransactionStore {
 
     private fun file(ctx: Context): File = File(ctx.filesDir, FILE_NAME)
 
-    fun addTransaction(ctx: Context, amount: Double, reason: String, mode: String, type: TransactionType): Transaction {
+    // New addTransaction includes category
+    fun addTransaction(ctx: Context, amount: Double, reason: String, mode: String, category: String, type: TransactionType): Transaction {
         val now = System.currentTimeMillis()
-        val transaction = Transaction(idSeed.incrementAndGet(), amount, reason.trim(), mode, type, now)
+        val transaction = Transaction(idSeed.incrementAndGet(), amount, reason.trim(), mode, category, type, now)
         writeAppend(ctx, transaction)
         return transaction
     }
@@ -27,24 +28,38 @@ object TransactionStore {
         val list = mutableListOf<Transaction>()
         BufferedReader(FileReader(f)).use { br ->
             br.lineSequence().forEach { line ->
-                // id,amount,reason,mode,type,time
+                // id,amount,reason,mode,category?,type,time
                 val parts = line.split('\t')
-                if (parts.size == 6) {
-                    val id = parts[0].toLongOrNull() ?: return@forEach
-                    val amount = parts[1].toDoubleOrNull() ?: return@forEach
-                    val reason = parts[2]
-                    val mode = parts[3]
-                    val type = try { TransactionType.valueOf(parts[4]) } catch (e: Exception) { return@forEach }
-                    val time = parts[5].toLongOrNull() ?: return@forEach
-                    list += Transaction(id, amount, reason, mode, type, time)
+                when (parts.size) {
+                    7 -> {
+                        val id = parts[0].toLongOrNull() ?: return@forEach
+                        val amount = parts[1].toDoubleOrNull() ?: return@forEach
+                        val reason = parts[2]
+                        val mode = parts[3]
+                        val category = parts[4]
+                        val type = try { TransactionType.valueOf(parts[5]) } catch (e: Exception) { return@forEach }
+                        val time = parts[6].toLongOrNull() ?: return@forEach
+                        list += Transaction(id, amount, reason, mode, category, type, time)
+                    }
+                    6 -> {
+                        // Backwards compatibility: older rows without category
+                        val id = parts[0].toLongOrNull() ?: return@forEach
+                        val amount = parts[1].toDoubleOrNull() ?: return@forEach
+                        val reason = parts[2]
+                        val mode = parts[3]
+                        val type = try { TransactionType.valueOf(parts[4]) } catch (e: Exception) { return@forEach }
+                        val time = parts[5].toLongOrNull() ?: return@forEach
+                        list += Transaction(id, amount, reason, mode, "Uncategorized", type, time)
+                    }
+                    else -> return@forEach
                 }
             }
         }
         return list.sortedByDescending { it.time }
     }
 
-    fun getSummary(ctx: Context): FinancialSummary {
-        val transactions = getTransactions(ctx)
+    // Compute summary for a given list (used by filtered views)
+    fun computeSummary(transactions: List<Transaction>): FinancialSummary {
         val totalCredit = transactions.filter { it.type == TransactionType.CREDIT }.sumOf { it.amount }
         val totalDebit = transactions.filter { it.type == TransactionType.DEBIT }.sumOf { it.amount }
         return FinancialSummary(
@@ -53,6 +68,11 @@ object TransactionStore {
             balance = totalCredit - totalDebit,
             transactionCount = transactions.size
         )
+    }
+
+    fun getSummary(ctx: Context): FinancialSummary {
+        val transactions = getTransactions(ctx)
+        return computeSummary(transactions)
     }
 
     fun updateTransaction(ctx: Context, oldTransaction: Transaction, newTransaction: Transaction) {
@@ -80,6 +100,7 @@ object TransactionStore {
                         t.amount.toString(),
                         t.reason.replace('\t',' '),
                         t.mode.replace('\t',' '),
+                        t.category.replace('\t',' '),
                         t.type.name,
                         t.time.toString()
                     ).joinToString("\t")
@@ -98,6 +119,7 @@ object TransactionStore {
                     t.amount.toString(),
                     t.reason.replace('\t',' '),
                     t.mode.replace('\t',' '),
+                    t.category.replace('\t',' '),
                     t.type.name,
                     t.time.toString()
                 ).joinToString("\t")

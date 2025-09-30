@@ -5,6 +5,7 @@ data class Transaction(
     val amount: Double,
     val reason: String,
     val mode: String,
+    val category: String,
     val type: TransactionType, // CREDIT or DEBIT
     val time: Long
 )

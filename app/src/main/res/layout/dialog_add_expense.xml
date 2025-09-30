@@ -127,6 +127,24 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Category Dropdown -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Category"
+        app:startIconDrawable="@drawable/ic_description"
+        app:startIconTint="@color/md_theme_light_onSurfaceVariant"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+        <AutoCompleteTextView
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <!-- Quick Amount Buttons -->
     <TextView
         android:layout_width="wrap_content"

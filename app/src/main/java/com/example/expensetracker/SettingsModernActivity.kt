@@ -17,7 +17,9 @@ import com.google.android.material.snackbar.Snackbar
 class SettingsModernActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsModernBinding
     private lateinit var adapter: PaymentMethodModernAdapter
+    private lateinit var categoryAdapter: PaymentMethodModernAdapter
     private val paymentMethods = mutableListOf<String>()
+    private val categories = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +28,9 @@ class SettingsModernActivity : AppCompatActivity() {
         
         setupToolbar()
         loadPaymentMethods()
+        loadCategories()
         setupRecyclerView()
+        setupCategoryRecyclerView()
         setupClickListeners()
         updateEmptyState()
     }
@@ -41,6 +45,12 @@ class SettingsModernActivity : AppCompatActivity() {
         val existingMethods = Prefs.getModes(this)
         paymentMethods.clear()
         paymentMethods.addAll(existingMethods)
+    }
+    
+    private fun loadCategories() {
+        val existingCategories = Prefs.getCategories(this)
+        categories.clear()
+        categories.addAll(existingCategories)
     }
     
     private fun setupRecyclerView() {
@@ -87,9 +97,45 @@ class SettingsModernActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(binding.recyclerViewPaymentMethods)
     }
     
+    private fun setupCategoryRecyclerView() {
+        categoryAdapter = PaymentMethodModernAdapter(
+            paymentMethods = categories,
+            onEdit = { position, method -> showEditCategoryDialog(position, method) },
+            onDelete = { position -> showDeleteCategoryConfirmation(position) }
+        )
+        
+        binding.recyclerViewCategories.layoutManager = LinearLayoutManager(this)
+        binding.recyclerViewCategories.adapter = categoryAdapter
+        // Allow drag to reorder categories as well
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+            0
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.bindingAdapterPosition
+                val toPosition = target.bindingAdapterPosition
+                val item = categories.removeAt(fromPosition)
+                categories.add(toPosition, item)
+                categoryAdapter.notifyItemMoved(fromPosition, toPosition)
+                saveCategories()
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+        })
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewCategories)
+    }
+    
     private fun setupClickListeners() {
         binding.fabAddPaymentMethod.setOnClickListener {
             showAddDialog()
+        }
+        binding.fabAddCategory.setOnClickListener {
+            showAddCategoryDialog()
         }
     }
     
@@ -244,6 +290,100 @@ class SettingsModernActivity : AppCompatActivity() {
     
     private fun savePaymentMethods() {
         Prefs.saveModes(this, paymentMethods)
+    }
+    
+    private fun saveCategories() {
+        Prefs.saveCategories(this, categories)
+    }
+    
+    private fun showAddCategoryDialog() {
+        showCategoryDialog(
+            title = "Add Category",
+            buttonText = "Add",
+            existingCategory = null,
+            position = -1
+        )
+    }
+    
+    private fun showEditCategoryDialog(position: Int, category: String) {
+        showCategoryDialog(
+            title = "Edit Category",
+            buttonText = "Save",
+            existingCategory = category,
+            position = position
+        )
+    }
+    
+    private fun showCategoryDialog(title: String, buttonText: String, existingCategory: String?, position: Int) {
+        val dialogBinding = DialogAddEditPaymentMethodBinding.inflate(layoutInflater)
+        dialogBinding.txtDialogTitle.text = title
+        dialogBinding.btnSave.text = buttonText
+        existingCategory?.let { dialogBinding.editPaymentMethodName.setText(it) }
+
+        // Setup quick select chips for categories
+        dialogBinding.chipGroupQuickSelect.removeAllViews()
+        val commonCats = listOf("Food", "Fashion", "Transport", "Bills", "Uncategorized")
+        commonCats.forEach { c ->
+            val chip = com.google.android.material.chip.Chip(this).apply {
+                text = c
+                isCheckable = true
+                // Tint chip background to match category color
+                val color = com.example.expensetracker.ui.CategoryUtils.getColorForCategory(this@SettingsModernActivity, c)
+                chipBackgroundColor = android.content.res.ColorStateList.valueOf(color)
+                setTextColor(if ((android.graphics.Color.red(color) * 0.299 + android.graphics.Color.green(color) * 0.587 + android.graphics.Color.blue(color) * 0.114) < 150) android.graphics.Color.WHITE else android.graphics.Color.DKGRAY)
+            }
+            dialogBinding.chipGroupQuickSelect.addView(chip)
+        }
+
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.chipGroupQuickSelect.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.isNotEmpty()) {
+                val selectedChip = dialogBinding.chipGroupQuickSelect.findViewById<com.google.android.material.chip.Chip>(checkedIds[0])
+                dialogBinding.editPaymentMethodName.setText(selectedChip.text)
+            }
+        }
+
+        dialogBinding.btnCancel.setOnClickListener { dialog.dismiss() }
+        dialogBinding.btnSave.setOnClickListener {
+            val name = dialogBinding.editPaymentMethodName.text.toString().trim()
+            if (name.isEmpty()) {
+                dialogBinding.editPaymentMethodName.error = "Please enter a category name"
+                return@setOnClickListener
+            }
+            val isDuplicate = categories.any { it.equals(name, ignoreCase = true) && (position == -1 || categories.indexOf(it) != position) }
+            if (isDuplicate) {
+                dialogBinding.editPaymentMethodName.error = "This category already exists"
+                return@setOnClickListener
+            }
+            if (position == -1) {
+                categories.add(name)
+                categoryAdapter.notifyItemInserted(categories.size - 1)
+            } else {
+                categories[position] = name
+                categoryAdapter.notifyItemChanged(position)
+            }
+            saveCategories()
+            dialog.dismiss()
+        }
+        dialog.show()
+        dialogBinding.editPaymentMethodName.requestFocus()
+    }
+    
+    private fun showDeleteCategoryConfirmation(position: Int) {
+        val name = categories[position]
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Delete Category")
+            .setMessage("Are you sure you want to delete '$name'?")
+            .setPositiveButton("Delete") { _, _ ->
+                categories.removeAt(position)
+                categoryAdapter.notifyItemRemoved(position)
+                saveCategories()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
     
     private fun showSnackbar(message: String) {
