@@ -1,9 +1,11 @@
 package com.example.expensetracker
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +29,7 @@ class SettingsModernActivity : AppCompatActivity() {
         setContentView(binding.root)
         
         setupToolbar()
+        setupThemeSelection()
         loadPaymentMethods()
         loadCategories()
         setupRecyclerView()
@@ -38,6 +41,41 @@ class SettingsModernActivity : AppCompatActivity() {
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+    }
+    
+    private fun setupThemeSelection() {
+        // Load current theme
+        val currentTheme = Prefs.getThemeMode(this)
+        when (currentTheme) {
+            Prefs.THEME_SYSTEM -> binding.chipThemeSystem.isChecked = true
+            Prefs.THEME_LIGHT -> binding.chipThemeLight.isChecked = true
+            Prefs.THEME_DARK -> binding.chipThemeDark.isChecked = true
+        }
+        
+        // Setup theme change listeners
+        binding.chipGroupTheme.setOnCheckedStateChangeListener { _, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            
+            val newTheme = when (checkedIds[0]) {
+                R.id.chipThemeLight -> Prefs.THEME_LIGHT
+                R.id.chipThemeDark -> Prefs.THEME_DARK
+                else -> Prefs.THEME_SYSTEM
+            }
+            
+            if (newTheme != currentTheme) {
+                Prefs.setThemeMode(this, newTheme)
+                applyTheme(newTheme)
+                Toast.makeText(this, "Theme applied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    
+    private fun applyTheme(theme: Int) {
+        when (theme) {
+            Prefs.THEME_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            Prefs.THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
     }
     
@@ -136,6 +174,10 @@ class SettingsModernActivity : AppCompatActivity() {
         }
         binding.fabAddCategory.setOnClickListener {
             showAddCategoryDialog()
+        }
+        
+        binding.btnManageBudgets.setOnClickListener {
+            startActivity(Intent(this, BudgetManagementActivity::class.java))
         }
     }
     
@@ -388,5 +430,70 @@ class SettingsModernActivity : AppCompatActivity() {
     
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+    
+    private fun showBudgetManagementDialog() {
+        val budgets = Prefs.getBudgets(this).toMutableMap()
+        val availableCategories = categories.toList()
+        
+        if (availableCategories.isEmpty()) {
+            Toast.makeText(this, "Please add categories first", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        val budgetItems = availableCategories.map { category ->
+            "$category: ₹${budgets[category]?.toInt() ?: 0}"
+        }.toTypedArray()
+        
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Manage Budgets")
+            .setItems(budgetItems) { _, which ->
+                val selectedCategory = availableCategories[which]
+                showSetBudgetDialog(selectedCategory, budgets[selectedCategory] ?: 0.0)
+            }
+            .setNeutralButton("Clear All") { _, _ ->
+                MaterialAlertDialogBuilder(this)
+                    .setTitle("Clear All Budgets")
+                    .setMessage("Are you sure you want to remove all budget limits?")
+                    .setPositiveButton("Clear") { _, _ ->
+                        availableCategories.forEach { Prefs.removeBudget(this, it) }
+                        Toast.makeText(this, "All budgets cleared", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+            .setNegativeButton("Close", null)
+            .show()
+    }
+    
+    private fun showSetBudgetDialog(category: String, currentBudget: Double) {
+        val input = android.widget.EditText(this).apply {
+            hint = "Enter budget amount"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setText(if (currentBudget > 0) currentBudget.toInt().toString() else "")
+            setPadding(48, 32, 48, 32)
+        }
+        
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Set Budget for $category")
+            .setMessage("Enter your monthly budget limit for this category")
+            .setView(input)
+            .setPositiveButton("Set") { _, _ ->
+                val amount = input.text.toString().toDoubleOrNull()
+                if (amount != null && amount > 0) {
+                    Prefs.setBudget(this, category, amount)
+                    Toast.makeText(this, "Budget set: ₹${amount.toInt()} for $category", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNeutralButton("Remove") { _, _ ->
+                Prefs.removeBudget(this, category)
+                Toast.makeText(this, "Budget removed for $category", Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+        
+        input.requestFocus()
     }
 }

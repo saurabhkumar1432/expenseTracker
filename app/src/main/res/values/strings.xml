@@ -59,4 +59,19 @@
     <string name="payment_method_updated">Payment method updated</string>
     <string name="payment_method_deleted">Payment method deleted</string>
     <string name="undo">Undo</string>
+    
+    <!-- Theme -->
+    <string name="desc_theme">Theme settings</string>
+    
+    <!-- Budget -->
+    <string name="desc_budget">Budget management</string>
+    
+    <!-- Search & Filter -->
+    <string name="search_transactions">Search transactions…</string>
+    <string name="desc_search">Search</string>
+    <string name="desc_date_filter">Date filter</string>
+    <string name="desc_clear_search">Clear search</string>
+    
+    <!-- Widget -->
+    <string name="widget_description">Quick view of your daily expenses</string>
 </resources>

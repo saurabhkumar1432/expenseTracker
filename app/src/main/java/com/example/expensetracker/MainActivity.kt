@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import android.widget.AutoCompleteTextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.expensetracker.data.TransactionStore
 import com.example.expensetracker.data.TransactionType
@@ -30,8 +31,14 @@ class MainActivity : AppCompatActivity() {
     private var allTransactions = emptyList<Transaction>()
     private var selectedPaymentMethods = emptySet<String>()
     private var selectedCategories = emptySet<String>()
+    private var searchQuery: String = ""
+    private var startDate: Long? = null
+    private var endDate: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply theme before super.onCreate
+        applyTheme()
+        
         super.onCreate(savedInstanceState)
         
         // Check onboarding
@@ -51,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         setupUI()
         setupRecyclerView()
         setupClickListeners()
+        setupSearch()
         
         // Add entrance animation
         val slideIn = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left)
@@ -108,6 +116,21 @@ class MainActivity : AppCompatActivity() {
         binding.btnFilter.setOnClickListener {
             showFilterDialog()
         }
+        
+        // Add date filter button
+        binding.btnDateFilter.setOnClickListener {
+            showDateRangePicker()
+        }
+        
+        // Clear search button
+        binding.btnClearSearch.setOnClickListener {
+            binding.searchEditText.text?.clear()
+        }
+        
+        // Date range chip close
+        binding.chipDateRange.setOnCloseIconClickListener {
+            clearDateFilter()
+        }
     }
 
     private fun refreshData() {
@@ -132,7 +155,25 @@ class MainActivity : AppCompatActivity() {
         val filteredTransactions = allTransactions.filter { t ->
             val methodMatch = selectedPaymentMethods.isEmpty() || t.mode in selectedPaymentMethods
             val categoryMatch = selectedCategories.isEmpty() || t.category in selectedCategories
-            methodMatch && categoryMatch
+            
+            // Search filter
+            val searchMatch = if (searchQuery.isBlank()) {
+                true
+            } else {
+                t.reason.contains(searchQuery, ignoreCase = true) ||
+                t.amount.toString().contains(searchQuery) ||
+                t.mode.contains(searchQuery, ignoreCase = true) ||
+                t.category.contains(searchQuery, ignoreCase = true)
+            }
+            
+            // Date filter
+            val dateMatch = if (startDate == null || endDate == null) {
+                true
+            } else {
+                t.time in startDate!!..endDate!!
+            }
+            
+            methodMatch && categoryMatch && searchMatch && dateMatch
         }
          
          // Update transaction list
@@ -141,7 +182,9 @@ class MainActivity : AppCompatActivity() {
          // Update transaction count
          val totalCount = allTransactions.size
          val filteredCount = filteredTransactions.size
-         binding.txtTransactionCount.text = if (selectedPaymentMethods.isEmpty()) {
+         val hasActiveFilters = selectedPaymentMethods.isNotEmpty() || selectedCategories.isNotEmpty() || 
+                                searchQuery.isNotBlank() || (startDate != null && endDate != null)
+         binding.txtTransactionCount.text = if (!hasActiveFilters) {
              "$totalCount entries"
          } else {
              "$filteredCount of $totalCount entries"
@@ -645,5 +688,90 @@ class MainActivity : AppCompatActivity() {
             TransactionStore.addTransaction(this, transaction.amount, transaction.reason, transaction.mode, transaction.category, transaction.type)
              refreshData()
          }.show()
+    }
+    
+    private fun applyTheme() {
+        when (Prefs.getThemeMode(this)) {
+            Prefs.THEME_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            Prefs.THEME_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
+    }
+    
+    private fun setupSearch() {
+        binding.searchEditText.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                searchQuery = s?.toString() ?: ""
+                binding.btnClearSearch.visibility = if (searchQuery.isNotEmpty()) {
+                    android.view.View.VISIBLE
+                } else {
+                    android.view.View.GONE
+                }
+                applyFilter()
+            }
+        })
+    }
+    
+    private fun showDateRangePicker() {
+        // Show start date picker
+        val startDatePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select Start Date")
+            .setSelection(startDate ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds())
+            .build()
+        
+        startDatePicker.addOnPositiveButtonClickListener { startSelection ->
+            // Show end date picker after start date is selected
+            val endDatePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select End Date")
+                .setSelection(endDate ?: com.google.android.material.datepicker.MaterialDatePicker.todayInUtcMilliseconds())
+                .build()
+            
+            endDatePicker.addOnPositiveButtonClickListener { endSelection ->
+                // Set date range (normalize to start and end of day)
+                val startCal = java.util.Calendar.getInstance().apply {
+                    timeInMillis = startSelection
+                    set(java.util.Calendar.HOUR_OF_DAY, 0)
+                    set(java.util.Calendar.MINUTE, 0)
+                    set(java.util.Calendar.SECOND, 0)
+                    set(java.util.Calendar.MILLISECOND, 0)
+                }
+                
+                val endCal = java.util.Calendar.getInstance().apply {
+                    timeInMillis = endSelection
+                    set(java.util.Calendar.HOUR_OF_DAY, 23)
+                    set(java.util.Calendar.MINUTE, 59)
+                    set(java.util.Calendar.SECOND, 59)
+                    set(java.util.Calendar.MILLISECOND, 999)
+                }
+                
+                startDate = startCal.timeInMillis
+                endDate = endCal.timeInMillis
+                
+                // Update UI
+                val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+                val rangeText = "${dateFormat.format(startDate)} - ${dateFormat.format(endDate)}"
+                binding.chipDateRange.text = rangeText
+                binding.chipDateRange.visibility = android.view.View.VISIBLE
+                
+                // Apply filter
+                applyFilter()
+                
+                Toast.makeText(this, "Date filter applied", Toast.LENGTH_SHORT).show()
+            }
+            
+            endDatePicker.show(supportFragmentManager, "END_DATE_PICKER")
+        }
+        
+        startDatePicker.show(supportFragmentManager, "START_DATE_PICKER")
+    }
+    
+    private fun clearDateFilter() {
+        startDate = null
+        endDate = null
+        binding.chipDateRange.visibility = android.view.View.GONE
+        applyFilter()
+        Toast.makeText(this, "Date filter cleared", Toast.LENGTH_SHORT).show()
     }
 }
