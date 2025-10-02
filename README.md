@@ -6,6 +6,23 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 ![Kotlin](https://img.shields.io/badge/Language-Kotlin-blue.svg)
 ![Material Design 3](https://img.shields.io/badge/UI-Material%20Design%203-orange.svg)
 ![Offline](https://img.shields.io/badge/Mode-Offline-red.svg)
+[![Release](https://img.shields.io/github/v/release/saurabhkumar1432/expenseTracker)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)
+[![Download](https://img.shields.io/github/downloads/saurabhkumar1432/expenseTracker/total)](https://github.com/saurabhkumar1432/expenseTracker/releases)
+
+## 📥 Download
+
+**[⬇️ Download Latest APK (v2.0.0)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
+
+**Quick Install:**
+1. Download `app-debug.apk` from the latest release
+2. Enable "Install from Unknown Sources" in your Android settings
+3. Open the APK and install
+4. Launch the app and complete the quick onboarding!
+
+**Requirements:**
+- Android 7.0 (API 24) or higher
+- ~2 MB storage space
+- No internet connection required
 
 ## ✨ Features
 
