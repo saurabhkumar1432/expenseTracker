@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@drawable/gradient_header"
-        app:title="Payment Methods"
+        app:title="Settings"
         app:titleTextColor="@color/white"
         app:navigationIcon="@drawable/ic_arrow_back"
         app:navigationIconTint="@color/white"
@@ -23,8 +23,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="16dp"
+        android:paddingBottom="80dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/fabAddPaymentMethod"
+        app:layout_constraintBottom_toTopOf="@id/bottomButtonLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -33,62 +35,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header Info Card -->
+            <!-- App Theme Section -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                style="?attr/materialCardViewFilledStyle"
-                app:cardCornerRadius="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/ic_payment"
-                        app:tint="?attr/colorPrimary"
-                        android:background="@drawable/circle_background"
-                        android:backgroundTint="?attr/colorPrimaryContainer"
-                        android:padding="8dp"
-                        android:contentDescription="@string/desc_payment_methods"
-                        android:layout_marginEnd="16dp" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Manage Payment Methods"
-                            android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Add, edit, or remove your payment options"
-                            android:textAppearance="?attr/textAppearanceBodyMedium"
-                            android:textColor="?attr/colorOnSurfaceVariant" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Theme Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 style="?attr/materialCardViewFilledStyle"
                 app:cardCornerRadius="16dp">
 
@@ -106,15 +57,15 @@
                         android:layout_marginBottom="12dp">
 
                         <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:src="@drawable/ic_settings"
                             app:tint="?attr/colorPrimary"
                             android:background="@drawable/circle_background"
                             android:backgroundTint="?attr/colorPrimaryContainer"
                             android:padding="8dp"
                             android:contentDescription="@string/desc_theme"
-                            android:layout_marginEnd="16dp" />
+                            android:layout_marginEnd="12dp" />
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -126,13 +77,14 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="App Theme"
-                                android:textAppearance="?attr/textAppearanceTitleMedium" />
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textSize="16sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Choose your preferred theme"
-                                android:textAppearance="?attr/textAppearanceBodyMedium"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
                                 android:textColor="?attr/colorOnSurfaceVariant" />
 
                         </LinearLayout>
@@ -174,12 +126,77 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Payment Methods List -->
+            <!-- Budget Management Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                style="?attr/materialCardViewFilledStyle"
+                app:cardCornerRadius="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_currency"
+                        app:tint="?attr/colorPrimary"
+                        android:background="@drawable/circle_background"
+                        android:backgroundTint="?attr/colorPrimaryContainer"
+                        android:padding="8dp"
+                        android:contentDescription="@string/desc_budget"
+                        android:layout_marginEnd="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Set Category Budgets"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Control spending by setting limits"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnManageBudgets"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_min_height"
+                        android:text="Manage"
+                        android:textSize="@dimen/button_text_size"
+                        android:minHeight="@dimen/button_min_height"
+                        android:paddingHorizontal="@dimen/button_padding_horizontal"
+                        android:paddingVertical="@dimen/button_padding_vertical" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Payment Methods Header -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Your Payment Methods"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp" />
 
             <!-- RecyclerView for Payment Methods -->
@@ -188,42 +205,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="8dp"
                 tools:listitem="@layout/item_payment_method_modern"
-                tools:itemCount="5" />
+                tools:itemCount="3" />
 
-            <!-- Empty State (show when no payment methods) -->
+            <!-- Empty State for Payment Methods -->
             <LinearLayout
                 android:id="@+id/emptyStateContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="32dp"
+                android:padding="24dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_payment"
                     app:tint="?attr/colorOnSurfaceVariant"
                     android:alpha="0.6"
                     android:contentDescription="@string/desc_no_payment_methods"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="12dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="No Payment Methods"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textSize="15sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginBottom="8dp" />
+                    android:layout_marginBottom="6dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add your first payment method using the + button below"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:text="Add your first payment method"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:gravity="center" />
 
@@ -235,7 +254,8 @@
                 android:layout_height="wrap_content"
                 android:text="Your Categories"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:layout_marginTop="24dp"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="12dp" />
 
             <!-- RecyclerView for Categories -->
@@ -244,118 +264,57 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
+                android:paddingBottom="16dp"
                 tools:listitem="@layout/item_payment_method_modern"
-                tools:itemCount="6" />
-
-            <!-- Budget Management Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Budget Management"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                style="?attr/materialCardViewFilledStyle"
-                app:cardCornerRadius="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/ic_currency"
-                            app:tint="?attr/colorPrimary"
-                            android:background="@drawable/circle_background"
-                            android:backgroundTint="?attr/colorPrimaryContainer"
-                            android:padding="8dp"
-                            android:contentDescription="@string/desc_budget"
-                            android:layout_marginEnd="16dp" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Set Category Budgets"
-                                android:textAppearance="?attr/textAppearanceTitleMedium" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Control spending by setting limits"
-                                android:textAppearance="?attr/textAppearanceBodyMedium"
-                                android:textColor="?attr/colorOnSurfaceVariant" />
-
-                        </LinearLayout>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnManageBudgets"
-                            style="@style/Widget.Material3.Button.TonalButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="@dimen/button_min_height"
-                            android:text="Manage"
-                            android:textSize="@dimen/button_text_size"
-                            android:minHeight="@dimen/button_min_height"
-                            android:paddingHorizontal="@dimen/button_padding_horizontal"
-                            android:paddingVertical="@dimen/button_padding_vertical" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Spacer -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="8dp" />
-
-            <!-- Empty state for categories is not added separately to keep UI compact -->
+                tools:itemCount="4" />
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Floating Action Button for Payment Methods -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabAddPaymentMethod"
-        android:layout_width="wrap_content"
+    <!-- Fixed Bottom Button Layout -->
+    <LinearLayout
+        android:id="@+id/bottomButtonLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Add Payment Method"
-        app:icon="@drawable/ic_add"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="?attr/colorSurface"
+        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Floating Action Button for Categories -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabAddCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Add Category"
-        app:icon="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/fabAddPaymentMethod"
-        android:layout_marginEnd="8dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fabAddCategory"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/button_min_height"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:text="Add Category"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="@dimen/button_padding_vertical"
+            app:icon="@drawable/ic_add"
+            app:iconSize="18dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/fabAddPaymentMethod"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/button_min_height"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:text="Add Payment"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="@dimen/button_padding_vertical"
+            app:icon="@drawable/ic_add"
+            app:iconSize="18dp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

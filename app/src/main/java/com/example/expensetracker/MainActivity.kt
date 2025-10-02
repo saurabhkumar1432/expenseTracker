@@ -535,6 +535,12 @@ class MainActivity : AppCompatActivity() {
         }
         
         dialog.show()
+        
+        // Make dialog wider for better content visibility on S23
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.90).toInt(),
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
     
     private fun showEditTransactionDialog(transaction: com.example.expensetracker.data.Transaction) {
@@ -673,6 +679,12 @@ class MainActivity : AppCompatActivity() {
         }
         
         dialog.show()
+        
+        // Make dialog wider for better content visibility on S23
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.90).toInt(),
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
     
     private fun deleteTransaction(transaction: com.example.expensetracker.data.Transaction) {

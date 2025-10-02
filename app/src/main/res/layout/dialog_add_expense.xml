@@ -12,15 +12,15 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="16dp">
 
         <ImageView
             android:id="@+id/iconTransactionType"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:src="@drawable/ic_arrow_downward"
             app:tint="@color/debit_red"
-            android:layout_marginEnd="12dp" />
+            android:layout_marginEnd="10dp" />
 
         <TextView
             android:id="@+id/titleTransaction"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Add Expense"
-            android:textSize="@dimen/title_text_size"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/md_theme_light_onSurface" />
 
@@ -39,7 +39,7 @@
         android:id="@+id/toggleTransactionType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         app:singleSelection="true"
         app:selectionRequired="true">
 
@@ -85,7 +85,7 @@
         app:startIconTint="@color/gradient_start"
         app:boxStrokeColor="@color/gradient_start"
         app:hintTextColor="@color/gradient_start"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="10dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -106,7 +106,7 @@
         android:hint="Description (Optional)"
         app:startIconDrawable="@drawable/ic_description"
         app:startIconTint="@color/md_theme_light_onSurfaceVariant"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="10dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -127,7 +127,7 @@
         android:hint="Payment Method"
         app:startIconDrawable="@drawable/ic_payment"
         app:startIconTint="@color/md_theme_light_onSurfaceVariant"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="10dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
         <AutoCompleteTextView
@@ -147,7 +147,7 @@
         android:hint="Category"
         app:startIconDrawable="@drawable/ic_description"
         app:startIconTint="@color/md_theme_light_onSurfaceVariant"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="10dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
         <AutoCompleteTextView
@@ -165,16 +165,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Quick Amounts"
-        android:textSize="@dimen/button_text_size"
+        android:textSize="12sp"
         android:textStyle="bold"
         android:textColor="@color/md_theme_light_onSurfaceVariant"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="6dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginBottom="24dp">
+        android:layout_marginBottom="12dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAmount50"
