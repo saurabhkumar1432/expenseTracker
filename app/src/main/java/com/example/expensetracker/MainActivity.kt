@@ -326,29 +326,31 @@ class MainActivity : AppCompatActivity() {
         val categoryAdapter = FilterAdapter { }
         recyclerCategoryOptions.adapter = categoryAdapter
         
-        // Get payment methods with their transaction counts
-        val paymentMethodCounts = allTransactions.groupBy { it.mode }
-            .map { (method, transactions) -> 
-                FilterOption(
-                    paymentMethod = method,
-                    transactionCount = transactions.size,
-                    isSelected = method in selectedPaymentMethods
-                )
-            }
-            .sortedByDescending { it.transactionCount }
+        // Get payment methods with their transaction counts - include all defined methods
+        val allModes = Prefs.getModes(this).toSet()
+        val transactionsByMode = allTransactions.groupBy { it.mode }
+        val paymentMethodCounts = allModes.map { method ->
+            val transactions = transactionsByMode[method] ?: emptyList()
+            FilterOption(
+                paymentMethod = method,
+                transactionCount = transactions.size,
+                isSelected = method in selectedPaymentMethods
+            )
+        }.sortedByDescending { it.transactionCount }
         
         filterAdapter.setFilterOptions(paymentMethodCounts)
         
-        // Get categories with counts
-        val categoryCounts = allTransactions.groupBy { it.category }
-            .map { (cat, transactions) ->
-                FilterOption(
-                    paymentMethod = cat,
-                    transactionCount = transactions.size,
-                    isSelected = cat in selectedCategories
-                )
-            }
-            .sortedByDescending { it.transactionCount }
+        // Get categories with counts - include all defined categories
+        val allCategories = Prefs.getCategories(this).toSet()
+        val transactionsByCategory = allTransactions.groupBy { it.category }
+        val categoryCounts = allCategories.map { cat ->
+            val transactions = transactionsByCategory[cat] ?: emptyList()
+            FilterOption(
+                paymentMethod = cat,
+                transactionCount = transactions.size,
+                isSelected = cat in selectedCategories
+            )
+        }.sortedByDescending { it.transactionCount }
         categoryAdapter.setFilterOptions(categoryCounts)
         
         // Create and show dialog
