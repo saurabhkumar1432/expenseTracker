@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/dialog_padding">
 
     <TextView
         android:layout_width="match_parent"
@@ -36,6 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
+            android:textSize="@dimen/input_text_size"
+            android:minHeight="@dimen/input_min_height"
             android:maxLines="1" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -84,22 +86,34 @@
             android:id="@+id/btnRemoveBudget"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_min_height"
             android:text="Remove Budget"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical"
             android:textColor="?attr/colorError" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelBudget"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel" />
+            android:layout_height="@dimen/button_min_height"
+            android:text="Cancel"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveBudget"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save" />
+            android:layout_height="@dimen/button_min_height"
+            android:text="Save"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical" />
 
     </LinearLayout>
 

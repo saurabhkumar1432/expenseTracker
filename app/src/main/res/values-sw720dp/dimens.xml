@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dimensions for large tablets (720dp width and above) -->
+    
+    <!-- Header padding -->
+    <dimen name="header_padding_horizontal">48dp</dimen>
+    <dimen name="header_padding_top">32dp</dimen>
+    <dimen name="header_padding_bottom">40dp</dimen>
+    <dimen name="header_min_height">260dp</dimen>
+    
+    <!-- Card dimensions -->
+    <dimen name="summary_card_padding_horizontal">28dp</dimen>
+    <dimen name="summary_card_padding_vertical">24dp</dimen>
+    <dimen name="summary_card_min_height">130dp</dimen>
+    <dimen name="summary_card_margin">14dp</dimen>
+    
+    <!-- Text sizes -->
+    <dimen name="title_text_size">36sp</dimen>
+    <dimen name="card_label_text_size">18sp</dimen>
+    <dimen name="card_value_text_size">28sp</dimen>
+    <dimen name="card_amount_text_size">28sp</dimen>
+    
+    <!-- Button dimensions -->
+    <dimen name="button_min_height">64dp</dimen>
+    <dimen name="button_padding_horizontal">32dp</dimen>
+    <dimen name="button_padding_vertical">20dp</dimen>
+    <dimen name="button_text_size">18sp</dimen>
+    <dimen name="icon_button_size">64dp</dimen>
+    
+    <!-- Dialog dimensions -->
+    <dimen name="dialog_padding">40dp</dimen>
+    <dimen name="dialog_max_height">700dp</dimen>
+    <dimen name="recycler_max_height">400dp</dimen>
+    
+    <!-- Input field dimensions -->
+    <dimen name="input_text_size">20sp</dimen>
+    <dimen name="input_min_height">72dp</dimen>
+</resources>

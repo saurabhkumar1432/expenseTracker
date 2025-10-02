@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="@dimen/dialog_padding">
 
     <!-- Dialog Header -->
     <TextView
@@ -38,6 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapWords"
+            android:textSize="@dimen/input_text_size"
+            android:minHeight="@dimen/input_min_height"
             android:maxLength="30"
             tools:text="Cash" />
 
@@ -75,15 +77,23 @@
             android:id="@+id/btnCancel"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_min_height"
             android:layout_marginEnd="8dp"
-            android:text="Cancel" />
+            android:text="Cancel"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_min_height"
             android:text="Add Method"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical"
             tools:text="Save Changes" />
 
     </LinearLayout>

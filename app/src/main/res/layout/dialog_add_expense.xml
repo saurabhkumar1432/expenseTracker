@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="@dimen/dialog_padding">
 
     <!-- Header -->
     <LinearLayout
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Add Expense"
-            android:textSize="24sp"
+            android:textSize="@dimen/title_text_size"
             android:textStyle="bold"
             android:textColor="@color/md_theme_light_onSurface" />
 
@@ -47,10 +47,14 @@
             android:id="@+id/btnExpense"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_min_height"
             android:layout_weight="1"
             android:text="Expense"
+            android:textSize="@dimen/button_text_size"
             android:textColor="@color/debit_red"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical"
             app:icon="@drawable/ic_arrow_downward"
             app:iconTint="@color/debit_red" />
 
@@ -58,10 +62,14 @@
             android:id="@+id/btnIncome"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_min_height"
             android:layout_weight="1"
             android:text="Income"
+            android:textSize="@dimen/button_text_size"
             android:textColor="@color/credit_green"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical"
             app:icon="@drawable/ic_arrow_upward"
             app:iconTint="@color/credit_green" />
 
@@ -85,8 +93,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="@dimen/input_text_size"
+            android:textStyle="bold"
+            android:minHeight="@dimen/input_min_height" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -105,6 +114,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences"
+            android:textSize="@dimen/input_text_size"
+            android:minHeight="@dimen/input_min_height"
             android:maxLines="2" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -116,13 +127,15 @@
         android:hint="Payment Method"
         app:startIconDrawable="@drawable/ic_payment"
         app:startIconTint="@color/md_theme_light_onSurfaceVariant"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
         <AutoCompleteTextView
             android:id="@+id/spinnerMode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="@dimen/input_text_size"
+            android:minHeight="@dimen/input_min_height"
             android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -141,6 +154,8 @@
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="@dimen/input_text_size"
+            android:minHeight="@dimen/input_min_height"
             android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -150,7 +165,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Quick Amounts"
-        android:textSize="14sp"
+        android:textSize="@dimen/button_text_size"
         android:textStyle="bold"
         android:textColor="@color/md_theme_light_onSurfaceVariant"
         android:layout_marginBottom="8dp" />
@@ -165,77 +180,81 @@
             android:id="@+id/btnAmount50"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/button_min_height"
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
             android:text="₹50"
-            android:textSize="12sp"
+            android:textSize="@dimen/button_text_size"
             android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="4dp"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="@dimen/button_padding_vertical"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:maxLines="1"
             android:autoSizeTextType="uniform"
             android:autoSizeMinTextSize="10sp"
-            android:autoSizeMaxTextSize="12sp" />
+            android:autoSizeMaxTextSize="@dimen/button_text_size" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAmount100"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/button_min_height"
             android:layout_weight="1"
             android:layout_marginHorizontal="4dp"
             android:text="₹100"
-            android:textSize="12sp"
+            android:textSize="@dimen/button_text_size"
             android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="4dp"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="@dimen/button_padding_vertical"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:maxLines="1"
             android:autoSizeTextType="uniform"
             android:autoSizeMinTextSize="10sp"
-            android:autoSizeMaxTextSize="12sp" />
+            android:autoSizeMaxTextSize="@dimen/button_text_size" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAmount500"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/button_min_height"
             android:layout_weight="1"
             android:layout_marginHorizontal="4dp"
             android:text="₹500"
-            android:textSize="12sp"
+            android:textSize="@dimen/button_text_size"
             android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="4dp"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="@dimen/button_padding_vertical"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:maxLines="1"
             android:autoSizeTextType="uniform"
             android:autoSizeMinTextSize="10sp"
-            android:autoSizeMaxTextSize="12sp" />
+            android:autoSizeMaxTextSize="@dimen/button_text_size" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAmount1000"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/button_min_height"
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:text="₹1000"
-            android:textSize="12sp"
+            android:textSize="@dimen/button_text_size"
             android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:padding="4dp"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="@dimen/button_padding_vertical"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:maxLines="1"
             android:autoSizeTextType="uniform"
             android:autoSizeMinTextSize="10sp"
-            android:autoSizeMaxTextSize="12sp" />
+            android:autoSizeMaxTextSize="@dimen/button_text_size" />
 
     </LinearLayout>
 
@@ -250,15 +269,23 @@
             android:id="@+id/btnCancel"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_min_height"
             android:text="Cancel"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical"
             android:layout_marginEnd="8dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSave"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_min_height"
             android:text="Save"
+            android:textSize="@dimen/button_text_size"
+            android:minHeight="@dimen/button_min_height"
+            android:paddingHorizontal="@dimen/button_padding_horizontal"
+            android:paddingVertical="@dimen/button_padding_vertical"
             app:backgroundTint="@color/gradient_start"
             app:icon="@drawable/ic_add" />
 
