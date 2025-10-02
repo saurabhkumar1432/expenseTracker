@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/card_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -76,10 +76,10 @@
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progressBudget"
                 android:layout_width="match_parent"
-                android:layout_height="8dp"
+                android:layout_height="@dimen/progress_bar_height"
                 app:indicatorColor="?attr/colorPrimary"
                 app:trackColor="?attr/colorSurfaceVariant"
-                app:trackCornerRadius="4dp"
+                app:trackCornerRadius="@dimen/corner_radius_small"
                 android:max="100"
                 android:progress="64" />
 

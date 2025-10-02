@@ -37,7 +37,7 @@
                     android:text="My Wallet"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textColor="@color/white"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/header_title_text_size"
                     android:textStyle="bold"
                     android:maxLines="1" />
 
@@ -258,7 +258,7 @@
                     android:layout_weight="1"
                     android:text="Recent Transactions"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/section_title_text_size"
                     android:textStyle="bold"
                     android:textColor="?attr/colorOnSurface"
                     android:maxLines="1"
@@ -318,7 +318,7 @@
                     android:layout_height="wrap_content"
                     android:text="0 entries"
                     android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/caption_text_size"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:maxLines="1" />
 
@@ -343,8 +343,8 @@
                     android:paddingVertical="4dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="@dimen/icon_medium"
+                        android:layout_height="@dimen/icon_medium"
                         android:src="@drawable/ic_search"
                         app:tint="?attr/colorOnSurfaceVariant"
                         android:contentDescription="@string/desc_search" />
@@ -399,12 +399,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="48dp"
+                android:padding="@dimen/empty_state_padding"
                 android:visibility="gone">
 
                 <ImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="@dimen/empty_state_icon"
+                    android:layout_height="@dimen/empty_state_icon"
                     android:src="@drawable/ic_currency"
                     android:alpha="0.3"
                     app:tint="?attr/colorOnSurfaceVariant"

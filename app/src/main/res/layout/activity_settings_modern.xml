@@ -22,7 +22,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="16dp"
+        android:padding="@dimen/card_padding"
         android:paddingBottom="80dp"
         android:clipToPadding="false"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
@@ -47,7 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/card_padding">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -57,13 +57,13 @@
                         android:layout_marginBottom="12dp">
 
                         <ImageView
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
+                            android:layout_width="@dimen/icon_large"
+                            android:layout_height="@dimen/icon_large"
                             android:src="@drawable/ic_settings"
                             app:tint="?attr/colorPrimary"
                             android:background="@drawable/circle_background"
                             android:backgroundTint="?attr/colorPrimaryContainer"
-                            android:padding="8dp"
+                            android:padding="@dimen/spacing_normal"
                             android:contentDescription="@string/desc_theme"
                             android:layout_marginEnd="12dp" />
 
@@ -78,7 +78,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="App Theme"
                                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                                android:textSize="16sp" />
+                                android:textSize="@dimen/section_title_text_size" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -138,17 +138,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp"
+                    android:padding="@dimen/card_padding"
                     android:gravity="center_vertical">
 
                     <ImageView
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="@dimen/icon_large"
+                        android:layout_height="@dimen/icon_large"
                         android:src="@drawable/ic_currency"
                         app:tint="?attr/colorPrimary"
                         android:background="@drawable/circle_background"
                         android:backgroundTint="?attr/colorPrimaryContainer"
-                        android:padding="8dp"
+                        android:padding="@dimen/spacing_normal"
                         android:contentDescription="@string/desc_budget"
                         android:layout_marginEnd="12dp" />
 
@@ -158,14 +158,12 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Set Category Budgets"
-                            android:textAppearance="?attr/textAppearanceTitleMedium"
-                            android:textSize="16sp" />
-
-                        <TextView
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Set Category Budgets"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textSize="@dimen/section_title_text_size" />                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Control spending by setting limits"
@@ -195,7 +193,7 @@
                 android:layout_height="wrap_content"
                 android:text="Your Payment Methods"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textSize="16sp"
+                android:textSize="@dimen/section_title_text_size"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="12dp" />
 
@@ -216,13 +214,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="24dp"
+                android:padding="@dimen/empty_state_padding"
                 android:visibility="gone"
                 tools:visibility="visible">
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
+                    android:layout_width="@dimen/empty_state_icon"
+                    android:layout_height="@dimen/empty_state_icon"
                     android:src="@drawable/ic_payment"
                     app:tint="?attr/colorOnSurfaceVariant"
                     android:alpha="0.6"
@@ -234,7 +232,7 @@
                     android:layout_height="wrap_content"
                     android:text="No Payment Methods"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textSize="15sp"
+                    android:textSize="@dimen/empty_state_title_text_size"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="6dp" />
 
@@ -254,7 +252,7 @@
                 android:layout_height="wrap_content"
                 android:text="Your Categories"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textSize="16sp"
+                android:textSize="@dimen/section_title_text_size"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="12dp" />
 
@@ -278,7 +276,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp"
+        android:padding="@dimen/spacing_medium"
         android:background="?attr/colorSurface"
         android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"

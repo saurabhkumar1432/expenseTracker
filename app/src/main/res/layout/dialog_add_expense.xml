@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/iconTransactionType"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="@dimen/icon_large"
+            android:layout_height="@dimen/icon_large"
             android:src="@drawable/ic_arrow_downward"
             app:tint="@color/debit_red"
             android:layout_marginEnd="10dp" />
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Add Expense"
-            android:textSize="18sp"
+            android:textSize="@dimen/dialog_title_text_size"
             android:textStyle="bold"
             android:textColor="@color/md_theme_light_onSurface" />
 
@@ -165,7 +165,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Quick Amounts"
-        android:textSize="12sp"
+        android:textSize="@dimen/label_text_size"
         android:textStyle="bold"
         android:textColor="@color/md_theme_light_onSurfaceVariant"
         android:layout_marginBottom="6dp" />

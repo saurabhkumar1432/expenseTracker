@@ -20,6 +20,19 @@
     <dimen name="card_value_text_size">28sp</dimen>
     <dimen name="card_amount_text_size">28sp</dimen>
     
+    <!-- Additional text sizes -->
+    <dimen name="header_title_text_size">28sp</dimen>
+    <dimen name="section_title_text_size">24sp</dimen>
+    <dimen name="dialog_title_text_size">24sp</dimen>
+    <dimen name="empty_state_title_text_size">20sp</dimen>
+    <dimen name="caption_text_size">16sp</dimen>
+    <dimen name="label_text_size">16sp</dimen>
+    <dimen name="transaction_metadata_text_size">14sp</dimen>
+    <dimen name="body_text_size">18sp</dimen>
+    <dimen name="body_small_text_size">16sp</dimen>
+    <dimen name="balance_text_size">48sp</dimen>
+    <dimen name="amount_text_size">42sp</dimen>
+    
     <!-- Button dimensions -->
     <dimen name="button_min_height">64dp</dimen>
     <dimen name="button_padding_horizontal">32dp</dimen>
@@ -35,4 +48,41 @@
     <!-- Input field dimensions -->
     <dimen name="input_text_size">20sp</dimen>
     <dimen name="input_min_height">72dp</dimen>
+    
+    <!-- Icon sizes -->
+    <dimen name="icon_tiny">20dp</dimen>
+    <dimen name="icon_small">28dp</dimen>
+    <dimen name="icon_medium">40dp</dimen>
+    <dimen name="icon_large">56dp</dimen>
+    <dimen name="icon_xlarge">72dp</dimen>
+    <dimen name="transaction_icon_background">48dp</dimen>
+    <dimen name="transaction_icon">24dp</dimen>
+    <dimen name="empty_state_icon">160dp</dimen>
+    <dimen name="separator_dot">5dp</dimen>
+    <dimen name="drag_handle_icon">32dp</dimen>
+    
+    <!-- Spacing & Padding -->
+    <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_normal">16dp</dimen>
+    <dimen name="spacing_medium">20dp</dimen>
+    <dimen name="spacing_large">32dp</dimen>
+    <dimen name="spacing_xlarge">40dp</dimen>
+    <dimen name="spacing_xxlarge">64dp</dimen>
+    
+    <dimen name="empty_state_padding">64dp</dimen>
+    <dimen name="card_padding">32dp</dimen>
+    <dimen name="card_padding_compact">20dp</dimen>
+    <dimen name="section_spacing">32dp</dimen>
+    <dimen name="dialog_item_margin">16dp</dimen>
+    <dimen name="item_vertical_margin">8dp</dimen>
+    <dimen name="list_item_padding">32dp</dimen>
+    
+    <!-- Border & Corner Radius -->
+    <dimen name="corner_radius_small">12dp</dimen>
+    <dimen name="corner_radius_medium">16dp</dimen>
+    <dimen name="corner_radius_large">24dp</dimen>
+    <dimen name="divider_height">2dp</dimen>
+    <dimen name="stroke_width">2dp</dimen>
+    <dimen name="progress_bar_height">12dp</dimen>
 </resources>
