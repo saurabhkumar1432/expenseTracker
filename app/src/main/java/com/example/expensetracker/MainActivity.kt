@@ -196,16 +196,26 @@ class MainActivity : AppCompatActivity() {
          val filteredSummary = TransactionStore.computeSummary(filteredTransactions)
          updateFinancialSummary(filteredSummary)
          
-         // Show/hide empty state
-         if (filteredTransactions.isEmpty()) {
-             binding.emptyStateLayout.visibility = android.view.View.VISIBLE
-             binding.recyclerTransactions.visibility = android.view.View.GONE
-             binding.transactionHeader.visibility = android.view.View.GONE
-         } else {
-             binding.emptyStateLayout.visibility = android.view.View.GONE
-             binding.recyclerTransactions.visibility = android.view.View.VISIBLE
-             binding.transactionHeader.visibility = android.view.View.VISIBLE
-         }
+        // Show/hide empty state
+        if (filteredTransactions.isEmpty()) {
+            binding.emptyStateLayout.visibility = android.view.View.VISIBLE
+            binding.recyclerTransactions.visibility = android.view.View.GONE
+            
+            // Keep header visible if there are active filters so users can see and remove them
+            if (hasActiveFilters && totalCount > 0) {
+                binding.transactionHeader.visibility = android.view.View.VISIBLE
+                // Update empty state to show it's a filter issue, not no data
+                updateEmptyStateForNoResults()
+            } else {
+                binding.transactionHeader.visibility = android.view.View.GONE
+                // Show default empty state for truly no transactions
+                updateEmptyStateForNoData()
+            }
+        } else {
+            binding.emptyStateLayout.visibility = android.view.View.GONE
+            binding.recyclerTransactions.visibility = android.view.View.VISIBLE
+            binding.transactionHeader.visibility = android.view.View.VISIBLE
+        }
     }
     
     private fun updateFilterStatus() {
@@ -264,6 +274,38 @@ class MainActivity : AppCompatActivity() {
             theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
             val primaryColor = android.content.res.ColorStateList.valueOf(typedValue.data)
             binding.btnFilter.iconTint = primaryColor
+        }
+    }
+
+    private fun updateEmptyStateForNoResults() {
+        // User has transactions but filters don't match any
+        binding.emptyStateIcon.setImageResource(R.drawable.ic_filter)
+        binding.emptyStateTitle.text = "No Matching Transactions"
+        binding.emptyStateMessage.text = "No transactions match your current filters. Try adjusting your filters or clear them to see all transactions."
+        binding.btnGetStarted.text = "Clear All Filters"
+        binding.btnGetStarted.visibility = android.view.View.VISIBLE
+        binding.btnGetStarted.setOnClickListener {
+            // Clear all filters
+            selectedPaymentMethods = emptySet()
+            selectedCategories = emptySet()
+            searchQuery = ""
+            startDate = null
+            endDate = null
+            binding.searchEditText.setText("")
+            Prefs.saveSelectedFilters(this, emptyList(), emptyList())
+            applyFilter()
+        }
+    }
+    
+    private fun updateEmptyStateForNoData() {
+        // User truly has no transactions
+        binding.emptyStateIcon.setImageResource(R.drawable.ic_currency)
+        binding.emptyStateTitle.text = "No Transactions Yet"
+        binding.emptyStateMessage.text = "Start tracking your finances by adding your first transaction using the + button below"
+        binding.btnGetStarted.text = "Get Started"
+        binding.btnGetStarted.visibility = android.view.View.VISIBLE
+        binding.btnGetStarted.setOnClickListener {
+            showAddTransactionDialog()
         }
     }
 
