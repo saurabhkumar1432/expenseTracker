@@ -37,6 +37,16 @@
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="?attr/colorOnSurface" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCloseFilter"
+            style="@style/Widget.Material3.Button.IconButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:icon="@drawable/ic_close"
+            app:iconTint="?attr/colorOnSurfaceVariant"
+            app:iconSize="20dp"
+            android:contentDescription="Close filter dialog" />
+
     </LinearLayout>
 
     <!-- Filter Section -->
