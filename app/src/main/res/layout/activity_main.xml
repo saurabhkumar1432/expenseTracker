@@ -264,18 +264,23 @@
                     android:maxLines="1"
                     android:ellipsize="end" />
 
-                <TextView
-                    android:id="@+id/txtFilterStatus"
-                    android:layout_width="wrap_content"
+                <HorizontalScrollView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="All"
-                    android:textAppearance="?attr/textAppearanceBodySmall"
-                    android:textColor="?attr/colorPrimary"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/chip_background"
-                    android:paddingHorizontal="8dp"
-                    android:paddingVertical="2dp"
-                    android:visibility="gone" />
+                    android:layout_weight="2"
+                    android:scrollbars="none"
+                    android:visibility="gone"
+                    android:id="@+id/scrollViewFilters">
+                    
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupFilters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        app:singleLine="true"
+                        app:chipSpacing="4dp" />
+                        
+                </HorizontalScrollView>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilter"

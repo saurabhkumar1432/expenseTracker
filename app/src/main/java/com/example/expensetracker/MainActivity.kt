@@ -209,16 +209,56 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun updateFilterStatus() {
+        // Clear existing chips
+        binding.chipGroupFilters.removeAllViews()
+        
         if (selectedPaymentMethods.isEmpty() && selectedCategories.isEmpty()) {
-            binding.txtFilterStatus.visibility = android.view.View.GONE
+            binding.scrollViewFilters.visibility = android.view.View.GONE
             // Reset to default theme color - use null to let theme handle it
             binding.btnFilter.iconTint = null
         } else {
-            binding.txtFilterStatus.visibility = android.view.View.VISIBLE
-            val methodPart = if (selectedPaymentMethods.isNotEmpty()) "${selectedPaymentMethods.size} method(s)" else ""
-            val categoryPart = if (selectedCategories.isNotEmpty()) "${selectedCategories.size} category(s)" else ""
-            val combined = listOf(methodPart, categoryPart).filter { it.isNotBlank() }.joinToString(", ")
-            binding.txtFilterStatus.text = combined
+            binding.scrollViewFilters.visibility = android.view.View.VISIBLE
+            
+            // Add chip for each selected payment method
+            selectedPaymentMethods.forEach { method ->
+                val chip = com.google.android.material.chip.Chip(this).apply {
+                    text = method
+                    isCloseIconVisible = true
+                    setChipIconResource(R.drawable.ic_payment)
+                    chipIconTint = getColorStateList(R.color.md_theme_light_onSurfaceVariant)
+                    
+                    setOnCloseIconClickListener {
+                        // Remove this payment method from selected filters
+                        selectedPaymentMethods = selectedPaymentMethods.minus(method)
+                        // Persist updated filters
+                        Prefs.saveSelectedFilters(this@MainActivity, selectedPaymentMethods.toList(), selectedCategories.toList())
+                        // Reapply filter and update UI
+                        applyFilter()
+                    }
+                }
+                binding.chipGroupFilters.addView(chip)
+            }
+            
+            // Add chip for each selected category
+            selectedCategories.forEach { category ->
+                val chip = com.google.android.material.chip.Chip(this).apply {
+                    text = category
+                    isCloseIconVisible = true
+                    setChipIconResource(R.drawable.ic_description)
+                    chipIconTint = getColorStateList(R.color.md_theme_light_onSurfaceVariant)
+                    
+                    setOnCloseIconClickListener {
+                        // Remove this category from selected filters
+                        selectedCategories = selectedCategories.minus(category)
+                        // Persist updated filters
+                        Prefs.saveSelectedFilters(this@MainActivity, selectedPaymentMethods.toList(), selectedCategories.toList())
+                        // Reapply filter and update UI
+                        applyFilter()
+                    }
+                }
+                binding.chipGroupFilters.addView(chip)
+            }
+            
             // Use primary color to indicate active filter
             val typedValue = android.util.TypedValue()
             theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
