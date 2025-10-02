@@ -312,6 +312,7 @@ class MainActivity : AppCompatActivity() {
         val recyclerFilterOptions = dialogView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerFilterOptions)
         val btnClearFilter = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnClearFilter)
         val btnApplyFilter = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnApplyFilter)
+        val btnCloseFilter = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCloseFilter)
         
         // Setup RecyclerView
         recyclerFilterOptions.layoutManager = LinearLayoutManager(this)
@@ -359,6 +360,10 @@ class MainActivity : AppCompatActivity() {
             .create()
             
         // Setup button listeners
+        btnCloseFilter.setOnClickListener {
+            dialog.dismiss()
+        }
+        
         btnClearFilter.setOnClickListener {
             filterAdapter.clearAll()
             categoryAdapter.clearAll()
