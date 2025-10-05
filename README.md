@@ -342,7 +342,7 @@ Potential features for future versions:
 
 For issues, questions, or suggestions:
 - Open an issue on GitHub
-- Email: saurabhkumar1432@gmail.com
+- Email: saurabhkumar1432001@gmail.com
 
 ---
 
