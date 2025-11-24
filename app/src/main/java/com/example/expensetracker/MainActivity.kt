@@ -95,6 +95,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SettingsModernActivity::class.java))
         }
         
+        binding.btnBudget.setOnClickListener {
+            startActivity(Intent(this, BudgetManagementActivity::class.java))
+        }
+        
         binding.btnGetStarted.setOnClickListener {
             showAddTransactionDialog()
         }

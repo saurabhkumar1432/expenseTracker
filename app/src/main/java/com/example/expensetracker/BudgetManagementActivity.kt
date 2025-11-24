@@ -22,6 +22,9 @@ class BudgetManagementActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBudgetManagementBinding
     private lateinit var adapter: BudgetAdapter
     private val budgetItems = mutableListOf<BudgetItem>()
+    
+    private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH) + 1
+    private var currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,14 +33,47 @@ class BudgetManagementActivity : AppCompatActivity() {
 
         setupToolbar()
         setupRecyclerView()
+        setupMonthNavigation()
         loadBudgets()
         setupClickListeners()
+        updateMonthDisplay()
     }
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+    }
+    
+    private fun setupMonthNavigation() {
+        binding.btnPreviousMonth.setOnClickListener {
+            changeMonth(-1)
+        }
+        
+        binding.btnNextMonth.setOnClickListener {
+            changeMonth(1)
+        }
+    }
+    
+    private fun changeMonth(delta: Int) {
+        currentMonth += delta
+        if (currentMonth < 1) {
+            currentMonth = 12
+            currentYear--
+        } else if (currentMonth > 12) {
+            currentMonth = 1
+            currentYear++
+        }
+        updateMonthDisplay()
+        loadBudgets()
+    }
+    
+    private fun updateMonthDisplay() {
+        val monthNames = arrayOf(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        )
+        binding.txtMonthYear.text = "${monthNames[currentMonth - 1]} $currentYear"
     }
 
     private fun setupRecyclerView() {
@@ -57,29 +93,21 @@ class BudgetManagementActivity : AppCompatActivity() {
 
     private fun loadBudgets() {
         val categories = Prefs.getCategories(this)
-        val budgets = Prefs.getBudgets(this)
-        val transactions = TransactionStore.getTransactions(this)
-
-        // Calculate start of month
-        val startOfMonth = Calendar.getInstance().apply {
-            set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
+        val monthlyBudgets = Prefs.getMonthlyBudgetsForMonth(this, currentMonth, currentYear)
+        val monthlySpending = TransactionStore.getAllMonthlySpending(this, currentMonth, currentYear)
 
         budgetItems.clear()
-        categories.forEach { category ->
-            val budget = budgets[category] ?: 0.0
-            if (budget > 0) {
-                // Calculate spent amount for this category this month
-                val spent = transactions
-                    .filter { it.category == category && it.type == TransactionType.DEBIT && it.time >= startOfMonth }
-                    .sumOf { it.amount }
-
-                budgetItems.add(BudgetItem(category, budget, spent))
-            }
+        
+        // Add items for categories with budgets
+        monthlyBudgets.forEach { budget ->
+            val spent = monthlySpending[budget.category] ?: 0.0
+            budgetItems.add(BudgetItem(
+                category = budget.category,
+                budgetAmount = budget.amount,
+                spentAmount = spent,
+                month = currentMonth,
+                year = currentYear
+            ))
         }
 
         adapter.notifyDataSetChanged()
@@ -98,10 +126,11 @@ class BudgetManagementActivity : AppCompatActivity() {
 
     private fun showCategorySelectionDialog() {
         val categories = Prefs.getCategories(this)
-        val budgets = Prefs.getBudgets(this)
+        val existingBudgets = Prefs.getMonthlyBudgetsForMonth(this, currentMonth, currentYear)
+        val existingCategories = existingBudgets.map { it.category }.toSet()
         
-        // Filter out categories that already have budgets
-        val availableCategories = categories.filter { budgets[it] == null || budgets[it] == 0.0 }
+        // Filter out categories that already have budgets for this month
+        val availableCategories = categories.filter { it !in existingCategories }
         
         if (availableCategories.isEmpty()) {
             Toast.makeText(this, "All categories already have budgets", Toast.LENGTH_SHORT).show()
@@ -161,27 +190,21 @@ class BudgetManagementActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun showBudgetDialog(category: String, currentBudget: Double) {
+    private fun showBudgetDialog(category: String, currentBudgetAmount: Double) {
         val dialogBinding = DialogBudgetManagementBinding.inflate(layoutInflater)
         
-        // Get current month spending for this category
-        val startOfMonth = Calendar.getInstance().apply {
-            set(Calendar.DAY_OF_MONTH, 1)
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }.timeInMillis
-        
-        val spent = TransactionStore.getTransactions(this)
-            .filter { it.category == category && it.type == TransactionType.DEBIT && it.time >= startOfMonth }
-            .sumOf { it.amount }
+        // Get spending for this category in the selected month
+        val spent = TransactionStore.getMonthlySpendingByCategory(this, category, currentMonth, currentYear)
 
         // Setup dialog
-        dialogBinding.txtBudgetCategory.text = "Category: $category"
+        val monthNames = arrayOf(
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        )
+        dialogBinding.txtBudgetCategory.text = "$category - ${monthNames[currentMonth - 1]} $currentYear"
         dialogBinding.txtCurrentSpending.text = "₹${spent.toInt()}"
-        if (currentBudget > 0) {
-            dialogBinding.editBudgetAmount.setText(currentBudget.toInt().toString())
+        if (currentBudgetAmount > 0) {
+            dialogBinding.editBudgetAmount.setText(currentBudgetAmount.toInt().toString())
         }
 
         val dialog = MaterialAlertDialogBuilder(this)
@@ -191,7 +214,7 @@ class BudgetManagementActivity : AppCompatActivity() {
         dialogBinding.btnSaveBudget.setOnClickListener {
             val amount = dialogBinding.editBudgetAmount.text.toString().toDoubleOrNull()
             if (amount != null && amount > 0) {
-                Prefs.setBudget(this, category, amount)
+                Prefs.setMonthlyBudget(this, category, amount, currentMonth, currentYear)
                 Toast.makeText(this, "Budget set: ₹${amount.toInt()} for $category", Toast.LENGTH_SHORT).show()
                 loadBudgets()
                 dialog.dismiss()
@@ -205,7 +228,7 @@ class BudgetManagementActivity : AppCompatActivity() {
         }
 
         dialogBinding.btnRemoveBudget.setOnClickListener {
-            Prefs.removeBudget(this, category)
+            Prefs.removeMonthlyBudget(this, category, currentMonth, currentYear)
             Toast.makeText(this, "Budget removed", Toast.LENGTH_SHORT).show()
             loadBudgets()
             dialog.dismiss()
@@ -218,7 +241,9 @@ class BudgetManagementActivity : AppCompatActivity() {
     data class BudgetItem(
         val category: String,
         val budgetAmount: Double,
-        val spentAmount: Double
+        val spentAmount: Double,
+        val month: Int,
+        val year: Int
     )
 
     class BudgetAdapter(

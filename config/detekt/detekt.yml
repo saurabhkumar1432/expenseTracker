@@ -1,0 +1,14 @@
+# Minimal detekt configuration
+# Customize rules as needed
+processors:
+  active: true
+config:
+  validation: true
+
+rules:
+  naming:
+    active: true
+  comments:
+    active: true
+  complexity:
+    active: true

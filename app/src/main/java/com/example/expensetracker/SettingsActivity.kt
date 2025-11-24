@@ -1,10 +1,13 @@
 package com.example.expensetracker
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.expensetracker.data.Prefs
+import com.example.expensetracker.data.TransactionStore
+import com.example.expensetracker.utils.ExportUtils
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SettingsActivity : AppCompatActivity() {
@@ -46,10 +49,13 @@ class SettingsActivity : AppCompatActivity() {
                     showAddPaymentMethodDialog()
                 }
             }
-            .setNegativeButton("Done") { _, _ ->
+            .setNegativeButton("Export Data") { _, _ ->
+                exportData()
+            }
+            .setOnDismissListener {
                 finish()
             }
-            .setCancelable(false)
+            .setCancelable(true)
             .show()
     }
 
@@ -169,5 +175,64 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun savePaymentMethods() {
         Prefs.saveModes(this, paymentMethods)
+    }
+    
+    private fun exportData() {
+        try {
+            // Get all transactions
+            val transactions = TransactionStore.getTransactions(this)
+            
+            if (transactions.isEmpty()) {
+                Toast.makeText(this, "No transactions to export!", Toast.LENGTH_SHORT).show()
+                showPaymentMethodsManagementDialog()
+                return
+            }
+            
+            // Show export summary dialog
+            val summary = ExportUtils.getExportSummary(transactions)
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Export Data")
+                .setMessage("$summary\n\nProceed with export?")
+                .setPositiveButton("Export") { _, _ ->
+                    performExport(transactions)
+                }
+                .setNegativeButton("Cancel") { _, _ ->
+                    showPaymentMethodsManagementDialog()
+                }
+                .setCancelable(false)
+                .show()
+                
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error preparing export: ${e.message}", Toast.LENGTH_LONG).show()
+            showPaymentMethodsManagementDialog()
+        }
+    }
+    
+    private fun performExport(transactions: List<com.example.expensetracker.data.Transaction>) {
+        try {
+            val uri = ExportUtils.exportToCSV(this, transactions)
+            
+            if (uri != null) {
+                // Create share intent
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/csv"
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    putExtra(Intent.EXTRA_SUBJECT, "Expense Tracker Export")
+                    putExtra(Intent.EXTRA_TEXT, "Exported ${transactions.size} transactions")
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                
+                startActivity(Intent.createChooser(shareIntent, "Share Expense Data"))
+                Toast.makeText(this, "Export successful!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Failed to export data", Toast.LENGTH_LONG).show()
+            }
+            
+            showPaymentMethodsManagementDialog()
+            
+        } catch (e: Exception) {
+            Toast.makeText(this, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
+            showPaymentMethodsManagementDialog()
+        }
     }
 }

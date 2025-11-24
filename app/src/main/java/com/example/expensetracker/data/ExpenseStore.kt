@@ -127,4 +127,46 @@ object TransactionStore {
             fw.append('\n')
         }
     }
+    
+    /**
+     * Get total spending for a specific category in a given month/year
+     */
+    fun getMonthlySpendingByCategory(ctx: Context, category: String, month: Int, year: Int): Double {
+        val transactions = getTransactions(ctx)
+        val calendar = java.util.Calendar.getInstance()
+        
+        return transactions.filter { transaction ->
+            calendar.timeInMillis = transaction.time
+            val transactionMonth = calendar.get(java.util.Calendar.MONTH) + 1
+            val transactionYear = calendar.get(java.util.Calendar.YEAR)
+            
+            transaction.category == category &&
+            transaction.type == TransactionType.DEBIT &&
+            transactionMonth == month &&
+            transactionYear == year
+        }.sumOf { it.amount }
+    }
+    
+    /**
+     * Get all categories with spending for a given month/year
+     */
+    fun getAllMonthlySpending(ctx: Context, month: Int, year: Int): Map<String, Double> {
+        val transactions = getTransactions(ctx)
+        val calendar = java.util.Calendar.getInstance()
+        val result = mutableMapOf<String, Double>()
+        
+        transactions.forEach { transaction ->
+            calendar.timeInMillis = transaction.time
+            val transactionMonth = calendar.get(java.util.Calendar.MONTH) + 1
+            val transactionYear = calendar.get(java.util.Calendar.YEAR)
+            
+            if (transaction.type == TransactionType.DEBIT && 
+                transactionMonth == month && 
+                transactionYear == year) {
+                result[transaction.category] = result.getOrDefault(transaction.category, 0.0) + transaction.amount
+            }
+        }
+        
+        return result
+    }
 }
