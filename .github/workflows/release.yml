@@ -63,14 +63,28 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Decode Keystore
+        if: steps.check.outputs.exists == 'false'
+        env:
+            ENCODED_STRING: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+        run: |
+            if [ ! -z "$ENCODED_STRING" ]; then
+              echo $ENCODED_STRING | base64 -d > app/release.keystore
+            fi
+
       - name: Run checks
         if: steps.check.outputs.exists == 'false'
         run: |
           chmod +x gradlew
-          ./gradlew ktlintCheck detekt lintRelease --parallel
+          ./gradlew ktlintCheck detekt lintRelease testReleaseUnitTest --parallel
 
       - name: Build APK
         if: steps.check.outputs.exists == 'false'
+        env:
+          SIGNING_KEYSTORE_PATH: app/release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
       - name: Prepare APK

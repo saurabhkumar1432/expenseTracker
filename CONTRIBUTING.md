@@ -30,7 +30,17 @@ If you discover a security issue, see SECURITY.md for private reporting instruct
 
 ## Releases & changelog
 - Update CHANGELOG.md when adding features or making breaking changes.
-- Releases are created automatically when a tag like `vX.Y.Z` is pushed.
+- Releases are created automatically when code is merged into `main`. The version is determined by `versionName` in `app/build.gradle.kts`.
+
+### Secrets for Signing (Maintainers only)
+
+To enable signed releases, the following secrets must be set in the GitHub repository:
+
+*   `SIGNING_KEYSTORE_BASE64`: The content of your keystore file encoded in Base64.
+    *   Run `base64 -w 0 release.keystore > keystore.b64` to generate this.
+*   `SIGNING_STORE_PASSWORD`: The password for the keystore.
+*   `SIGNING_KEY_ALIAS`: The alias of the key.
+*   `SIGNING_KEY_PASSWORD`: The password for the key.
 
 ## PR checklist
 - Tests for new behavior
