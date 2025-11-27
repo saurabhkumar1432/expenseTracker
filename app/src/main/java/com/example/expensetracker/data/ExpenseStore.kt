@@ -15,7 +15,14 @@ object TransactionStore {
     private fun file(ctx: Context): File = File(ctx.filesDir, FILE_NAME)
 
     // New addTransaction includes category
-    fun addTransaction(ctx: Context, amount: Double, reason: String, mode: String, category: String, type: TransactionType): Transaction {
+    fun addTransaction(
+        ctx: Context,
+        amount: Double,
+        reason: String,
+        mode: String,
+        category: String,
+        type: TransactionType
+    ): Transaction {
         val now = System.currentTimeMillis()
         val transaction = Transaction(idSeed.incrementAndGet(), amount, reason.trim(), mode, category, type, now)
         writeAppend(ctx, transaction)
@@ -98,9 +105,9 @@ object TransactionStore {
                     listOf(
                         t.id.toString(),
                         t.amount.toString(),
-                        t.reason.replace('\t',' '),
-                        t.mode.replace('\t',' '),
-                        t.category.replace('\t',' '),
+                        t.reason.replace('\t', ' '),
+                        t.mode.replace('\t', ' '),
+                        t.category.replace('\t', ' '),
                         t.type.name,
                         t.time.toString()
                     ).joinToString("\t")
@@ -117,9 +124,9 @@ object TransactionStore {
                 listOf(
                     t.id.toString(),
                     t.amount.toString(),
-                    t.reason.replace('\t',' '),
-                    t.mode.replace('\t',' '),
-                    t.category.replace('\t',' '),
+                    t.reason.replace('\t', ' '),
+                    t.mode.replace('\t', ' '),
+                    t.category.replace('\t', ' '),
                     t.type.name,
                     t.time.toString()
                 ).joinToString("\t")
@@ -127,26 +134,26 @@ object TransactionStore {
             fw.append('\n')
         }
     }
-    
+
     /**
      * Get total spending for a specific category in a given month/year
      */
     fun getMonthlySpendingByCategory(ctx: Context, category: String, month: Int, year: Int): Double {
         val transactions = getTransactions(ctx)
         val calendar = java.util.Calendar.getInstance()
-        
+
         return transactions.filter { transaction ->
             calendar.timeInMillis = transaction.time
             val transactionMonth = calendar.get(java.util.Calendar.MONTH) + 1
             val transactionYear = calendar.get(java.util.Calendar.YEAR)
-            
+
             transaction.category == category &&
-            transaction.type == TransactionType.DEBIT &&
-            transactionMonth == month &&
-            transactionYear == year
+                transaction.type == TransactionType.DEBIT &&
+                transactionMonth == month &&
+                transactionYear == year
         }.sumOf { it.amount }
     }
-    
+
     /**
      * Get all categories with spending for a given month/year
      */
@@ -154,19 +161,17 @@ object TransactionStore {
         val transactions = getTransactions(ctx)
         val calendar = java.util.Calendar.getInstance()
         val result = mutableMapOf<String, Double>()
-        
+
         transactions.forEach { transaction ->
             calendar.timeInMillis = transaction.time
             val transactionMonth = calendar.get(java.util.Calendar.MONTH) + 1
             val transactionYear = calendar.get(java.util.Calendar.YEAR)
-            
-            if (transaction.type == TransactionType.DEBIT && 
-                transactionMonth == month && 
-                transactionYear == year) {
+
+            if (transaction.type == TransactionType.DEBIT && transactionMonth == month && transactionYear == year) {
                 result[transaction.category] = result.getOrDefault(transaction.category, 0.0) + transaction.amount
             }
         }
-        
+
         return result
     }
 }

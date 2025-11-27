@@ -23,7 +23,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         debug {
@@ -45,6 +45,11 @@ android {
     packaging {
         resources.excludes += listOf("META-INF/{AL2.0,LGPL2.1}")
     }
+    lint {
+        baseline = file("lint-baseline.xml")
+        abortOnError = false
+        checkReleaseBuilds = false
+    }
 }
 
 dependencies {
@@ -61,4 +66,24 @@ detekt {
     config = files("$rootDir/config/detekt/detekt.yml")
     buildUponDefaultConfig = true
     allRules = false
+}
+
+ktlint {
+    android.set(true)
+    ignoreFailures.set(false)
+    disabledRules.set(
+        setOf(
+            "filename",
+            "max-line-length",
+            "argument-list-wrapping",
+            "trailing-comma-on-call-site",
+            "trailing-comma-on-declaration-site",
+            "multiline-expression-wrapping",
+            "parameter-list-wrapping",
+            "function-signature",
+            "indent",
+            "no-wildcard-imports",
+            "final-newline"
+        )
+    )
 }

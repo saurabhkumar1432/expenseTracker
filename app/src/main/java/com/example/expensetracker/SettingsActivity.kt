@@ -15,12 +15,12 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Load existing payment methods
         val existingMethods = Prefs.getModes(this)
         paymentMethods.clear()
         paymentMethods.addAll(existingMethods)
-        
+
         // Show the payment methods management dialog immediately
         showPaymentMethodsManagementDialog()
     }
@@ -29,8 +29,7 @@ class SettingsActivity : AppCompatActivity() {
         val displayText = if (paymentMethods.isEmpty()) {
             "No payment methods added yet.\n\nUse the buttons below to get started!"
         } else {
-            "Current Payment Methods:\n\n" + 
-            paymentMethods.mapIndexed { index, method ->
+            "Current Payment Methods:\n\n" + paymentMethods.mapIndexed { index, method ->
                 "${index + 1}. $method"
             }.joinToString("\n")
         }
@@ -93,7 +92,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun showManageMethodsDialog() {
         val options = paymentMethods.toTypedArray()
-        
+
         MaterialAlertDialogBuilder(this)
             .setTitle("Select Method to Edit/Delete")
             .setItems(options) { _, which ->
@@ -176,18 +175,18 @@ class SettingsActivity : AppCompatActivity() {
     private fun savePaymentMethods() {
         Prefs.saveModes(this, paymentMethods)
     }
-    
+
     private fun exportData() {
         try {
             // Get all transactions
             val transactions = TransactionStore.getTransactions(this)
-            
+
             if (transactions.isEmpty()) {
                 Toast.makeText(this, "No transactions to export!", Toast.LENGTH_SHORT).show()
                 showPaymentMethodsManagementDialog()
                 return
             }
-            
+
             // Show export summary dialog
             val summary = ExportUtils.getExportSummary(transactions)
             MaterialAlertDialogBuilder(this)
@@ -201,17 +200,16 @@ class SettingsActivity : AppCompatActivity() {
                 }
                 .setCancelable(false)
                 .show()
-                
         } catch (e: Exception) {
             Toast.makeText(this, "Error preparing export: ${e.message}", Toast.LENGTH_LONG).show()
             showPaymentMethodsManagementDialog()
         }
     }
-    
+
     private fun performExport(transactions: List<com.example.expensetracker.data.Transaction>) {
         try {
             val uri = ExportUtils.exportToCSV(this, transactions)
-            
+
             if (uri != null) {
                 // Create share intent
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -221,15 +219,14 @@ class SettingsActivity : AppCompatActivity() {
                     putExtra(Intent.EXTRA_TEXT, "Exported ${transactions.size} transactions")
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                
+
                 startActivity(Intent.createChooser(shareIntent, "Share Expense Data"))
                 Toast.makeText(this, "Export successful!", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Failed to export data", Toast.LENGTH_LONG).show()
             }
-            
+
             showPaymentMethodsManagementDialog()
-            
         } catch (e: Exception) {
             Toast.makeText(this, "Export failed: ${e.message}", Toast.LENGTH_LONG).show()
             showPaymentMethodsManagementDialog()

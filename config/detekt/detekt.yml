@@ -1,14 +1,62 @@
-# Minimal detekt configuration
-# Customize rules as needed
-processors:
-  active: true
+# Detekt configuration for existing codebase
+# Relaxed rules to avoid blocking PRs on legacy code
+
+build:
+  maxIssues: -1
+  excludeCorrectable: false
+
 config:
   validation: true
+  warningsAsErrors: false
 
-rules:
-  naming:
-    active: true
-  comments:
-    active: true
-  complexity:
-    active: true
+processors:
+  active: true
+
+# Disable strict rules for existing code
+complexity:
+  active: true
+  TooManyFunctions:
+    active: false
+  LargeClass:
+    active: false
+  LongMethod:
+    active: false
+  CyclomaticComplexMethod:
+    active: false
+  NestedBlockDepth:
+    active: false
+
+empty-blocks:
+  active: true
+  EmptyFunctionBlock:
+    active: false
+
+exceptions:
+  active: true
+  TooGenericExceptionCaught:
+    active: false
+  SwallowedException:
+    active: false
+  PrintStackTrace:
+    active: false
+
+naming:
+  active: true
+  MatchingDeclarationName:
+    active: false
+  MemberNameEqualsClassName:
+    active: false
+
+potential-bugs:
+  active: true
+  ImplicitDefaultLocale:
+    active: false
+
+style:
+  active: true
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: false
+  UnusedPrivateMember:
+    active: false

@@ -18,7 +18,7 @@ class PaymentMethodAdapter(
 
         fun bind(paymentMethod: String, position: Int) {
             binding.txtPaymentMethodName.text = paymentMethod
-            
+
             // More options button click - shows popup menu
             binding.btnMoreOptions.setOnClickListener { view ->
                 android.widget.PopupMenu(view.context, view).apply {

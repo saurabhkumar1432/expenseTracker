@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.data.Prefs
 import com.example.expensetracker.data.TransactionStore
-import com.example.expensetracker.data.TransactionType
 import com.example.expensetracker.databinding.ActivityBudgetManagementBinding
 import com.example.expensetracker.databinding.DialogBudgetManagementBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,7 +21,7 @@ class BudgetManagementActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBudgetManagementBinding
     private lateinit var adapter: BudgetAdapter
     private val budgetItems = mutableListOf<BudgetItem>()
-    
+
     private var currentMonth: Int = Calendar.getInstance().get(Calendar.MONTH) + 1
     private var currentYear: Int = Calendar.getInstance().get(Calendar.YEAR)
 
@@ -44,17 +43,17 @@ class BudgetManagementActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
     }
-    
+
     private fun setupMonthNavigation() {
         binding.btnPreviousMonth.setOnClickListener {
             changeMonth(-1)
         }
-        
+
         binding.btnNextMonth.setOnClickListener {
             changeMonth(1)
         }
     }
-    
+
     private fun changeMonth(delta: Int) {
         currentMonth += delta
         if (currentMonth < 1) {
@@ -67,7 +66,7 @@ class BudgetManagementActivity : AppCompatActivity() {
         updateMonthDisplay()
         loadBudgets()
     }
-    
+
     private fun updateMonthDisplay() {
         val monthNames = arrayOf(
             "January", "February", "March", "April", "May", "June",
@@ -97,17 +96,19 @@ class BudgetManagementActivity : AppCompatActivity() {
         val monthlySpending = TransactionStore.getAllMonthlySpending(this, currentMonth, currentYear)
 
         budgetItems.clear()
-        
+
         // Add items for categories with budgets
         monthlyBudgets.forEach { budget ->
             val spent = monthlySpending[budget.category] ?: 0.0
-            budgetItems.add(BudgetItem(
-                category = budget.category,
-                budgetAmount = budget.amount,
-                spentAmount = spent,
-                month = currentMonth,
-                year = currentYear
-            ))
+            budgetItems.add(
+                BudgetItem(
+                    category = budget.category,
+                    budgetAmount = budget.amount,
+                    spentAmount = spent,
+                    month = currentMonth,
+                    year = currentYear
+                )
+            )
         }
 
         adapter.notifyDataSetChanged()
@@ -128,10 +129,10 @@ class BudgetManagementActivity : AppCompatActivity() {
         val categories = Prefs.getCategories(this)
         val existingBudgets = Prefs.getMonthlyBudgetsForMonth(this, currentMonth, currentYear)
         val existingCategories = existingBudgets.map { it.category }.toSet()
-        
+
         // Filter out categories that already have budgets for this month
         val availableCategories = categories.filter { it !in existingCategories }
-        
+
         if (availableCategories.isEmpty()) {
             Toast.makeText(this, "All categories already have budgets", Toast.LENGTH_SHORT).show()
             return
@@ -140,28 +141,33 @@ class BudgetManagementActivity : AppCompatActivity() {
         // Inflate custom dialog layout
         val dialogView = layoutInflater.inflate(R.layout.dialog_category_selection, null)
         val chipGroup: com.google.android.material.chip.ChipGroup = dialogView.findViewById(R.id.chipGroupCategories)
-        val btnSelect: com.google.android.material.button.MaterialButton = dialogView.findViewById(R.id.btnSelectCategory)
-        val btnCancel: com.google.android.material.button.MaterialButton = dialogView.findViewById(R.id.btnCancelCategory)
-        
+        val btnSelect: com.google.android.material.button.MaterialButton = dialogView.findViewById(
+            R.id.btnSelectCategory
+        )
+        val btnCancel: com.google.android.material.button.MaterialButton = dialogView.findViewById(
+            R.id.btnCancelCategory
+        )
+
         var selectedCategory: String? = null
-        
+
         // Add category chips with colors
         availableCategories.forEach { category ->
             val chip = com.google.android.material.chip.Chip(this).apply {
                 text = category
                 isCheckable = true
                 chipIcon = getDrawable(R.drawable.ic_description)
-                
+
                 // Apply category color
-                val color = com.example.expensetracker.ui.CategoryUtils.getColorForCategory(this@BudgetManagementActivity, category)
+                val color = com.example.expensetracker.ui.CategoryUtils.getColorForCategory(
+                    this@BudgetManagementActivity,
+                    category
+                )
                 chipBackgroundColor = android.content.res.ColorStateList.valueOf(color)
-                
+
                 // Set text color based on background luminance
-                val luminance = (android.graphics.Color.red(color) * 0.299 + 
-                                android.graphics.Color.green(color) * 0.587 + 
-                                android.graphics.Color.blue(color) * 0.114)
+                val luminance = (android.graphics.Color.red(color) * 0.299 + android.graphics.Color.green(color) * 0.587 + android.graphics.Color.blue(color) * 0.114)
                 setTextColor(if (luminance < 150) android.graphics.Color.WHITE else android.graphics.Color.DKGRAY)
-                
+
                 setOnCheckedChangeListener { _, isChecked ->
                     if (isChecked) {
                         selectedCategory = category
@@ -171,28 +177,28 @@ class BudgetManagementActivity : AppCompatActivity() {
             }
             chipGroup.addView(chip)
         }
-        
+
         val dialog = MaterialAlertDialogBuilder(this)
             .setView(dialogView)
             .create()
-        
+
         btnSelect.setOnClickListener {
             selectedCategory?.let { category ->
                 dialog.dismiss()
                 showBudgetDialog(category, 0.0)
             }
         }
-        
+
         btnCancel.setOnClickListener {
             dialog.dismiss()
         }
-        
+
         dialog.show()
     }
 
     private fun showBudgetDialog(category: String, currentBudgetAmount: Double) {
         val dialogBinding = DialogBudgetManagementBinding.inflate(layoutInflater)
-        
+
         // Get spending for this category in the selected month
         val spent = TransactionStore.getMonthlySpendingByCategory(this, category, currentMonth, currentYear)
 

@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object ExportUtils {
-    
+
     /**
      * Export transactions to CSV format
      * @param context Android context
@@ -22,17 +22,17 @@ object ExportUtils {
         return try {
             val fileName = "ExpenseTracker_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.csv"
             val file = File(context.cacheDir, fileName)
-            
+
             FileWriter(file).use { writer ->
                 // Write CSV header
                 writer.append("Date,Time,Type,Category,Payment Method,Reason,Amount\n")
-                
+
                 // Write transaction data
                 transactions.forEach { transaction ->
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                     val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
                     val date = Date(transaction.time)
-                    
+
                     writer.append("${dateFormat.format(date)},")
                     writer.append("${timeFormat.format(date)},")
                     writer.append("${transaction.type.name},")
@@ -42,7 +42,7 @@ object ExportUtils {
                     writer.append("${transaction.amount}\n")
                 }
             }
-            
+
             // Return content URI using FileProvider
             FileProvider.getUriForFile(
                 context,
@@ -54,14 +54,14 @@ object ExportUtils {
             null
         }
     }
-    
+
     /**
      * Escape CSV field to handle commas and quotes
      */
     private fun escapeCsvField(field: String): String {
         return field.replace("\"", "\"\"")
     }
-    
+
     /**
      * Get a summary text of the export
      */
@@ -69,7 +69,7 @@ object ExportUtils {
         val creditTotal = transactions.filter { it.type == TransactionType.CREDIT }.sumOf { it.amount }
         val debitTotal = transactions.filter { it.type == TransactionType.DEBIT }.sumOf { it.amount }
         val balance = creditTotal - debitTotal
-        
+
         return """
             Export Summary:
             - Total Transactions: ${transactions.size}

@@ -24,7 +24,7 @@ data class FinancialSummary(
 data class MonthlyBudget(
     val category: String,
     val amount: Double,
-    val month: Int,  // 1-12
+    val month: Int, // 1-12
     val year: Int
 )
 
@@ -37,4 +37,3 @@ data class MonthlyBudgetSummary(
     val month: Int,
     val year: Int
 )
-

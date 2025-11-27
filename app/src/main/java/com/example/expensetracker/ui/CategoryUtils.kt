@@ -12,7 +12,10 @@ object CategoryUtils {
             "fashion" -> ContextCompat.getColor(context, R.color.md_theme_light_secondaryContainer)
             "transport" -> ContextCompat.getColor(context, R.color.gradient_start)
             "bills" -> ContextCompat.getColor(context, R.color.debit_red_light)
-            "unclassified", "uncategorized", "other" -> ContextCompat.getColor(context, R.color.md_theme_light_onSurfaceVariant)
+            "unclassified", "uncategorized", "other" -> ContextCompat.getColor(
+                context,
+                R.color.md_theme_light_onSurfaceVariant
+            )
             else -> {
                 // Consistently generate a color from the hash for unknown categories
                 val colors = listOf(
