@@ -13,8 +13,8 @@ android {
         applicationId = "com.example.expensetracker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 210
+        versionName = "2.1.0"
     }
 
     buildTypes {
