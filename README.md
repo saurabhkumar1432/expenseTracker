@@ -33,8 +33,8 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 - 🏷️ **Categories** - 10 default categories with custom colors (Food, Transport, Shopping, etc.)
 - 🔍 **Smart Filtering** - Filter by payment method, category, search, and date range
 - 💵 **Budget Management** - Set monthly budgets per category with progress tracking
-- � **CSV Export** - Export all transactions to CSV with summary statistics
-- �📱 **Home Screen Widget** - Quick view of daily, weekly, and monthly expenses
+- 📤 **CSV Export** - Export all transactions to CSV with summary statistics
+- 📱 **Home Screen Widget** - Quick view of daily, weekly, and monthly expenses
 - 🌓 **Dark Mode** - Full dark theme support with system integration
 
 ### User Experience
@@ -341,7 +341,7 @@ This project is for personal use and learning purposes.
 Potential features for future versions:
 - 📊 Charts and analytics
 - 📅 Recurring transactions
-- � Export to PDF
+- 📄 Export to PDF
 - ☁️ Optional cloud backup
 - 🔔 Budget notifications
 - 💱 Multi-currency support
