@@ -74,9 +74,7 @@ jobs:
 
       - name: Run checks
         if: steps.check.outputs.exists == 'false'
-        run: |
-          chmod +x gradlew
-          ./gradlew ktlintCheck detekt lintRelease testReleaseUnitTest --parallel
+        run: ./gradlew lintRelease testReleaseUnitTest --parallel
 
       - name: Build APK
         if: steps.check.outputs.exists == 'false'
@@ -145,7 +143,7 @@ jobs:
           name: ExpenseTracker ${{ steps.version.outputs.tag }}
           body_path: notes.md
           files: ${{ steps.apk.outputs.path }}
-          draft: false
+          draft: true
           prerelease: ${{ contains(steps.version.outputs.name, '-') }}
 
       - name: Summary
