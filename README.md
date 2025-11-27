@@ -12,7 +12,7 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 
 ## 📥 Download
 
-**[⬇️ Download Latest APK (v2.1.0)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
+**[⬇️ Download Latest APK (v2.2.0)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
 
 **Quick Install:**
 1. Download `app-debug.apk` from the latest release
@@ -311,6 +311,11 @@ This project is for personal use and learning purposes.
 - GitHub Copilot for development assistance
 
 ## 📈 Version History
+
+### v2.2.0 (November 2025)
+- 🔄 **CI/CD Improvements** - Fixed release workflow path triggers
+- 📝 **Issue Templates** - Updated for Android-specific bug reports
+- 🧹 **Codebase Cleanup** - Streamlined workflows and templates
 
 ### v2.1.0 (November 2025)
 - 📤 **CSV Export** - Export transactions to CSV with summary
