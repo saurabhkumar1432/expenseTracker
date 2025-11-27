@@ -42,6 +42,17 @@
                     android:maxLines="1" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBudget"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="@dimen/icon_button_size"
+                    android:layout_height="@dimen/icon_button_size"
+                    app:icon="@drawable/ic_money"
+                    app:iconTint="@color/white"
+                    app:backgroundTint="@color/transparent"
+                    app:iconSize="20dp"
+                    android:contentDescription="Budget Management" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSettings"
                     style="@style/Widget.Material3.Button.IconButton"
                     android:layout_width="@dimen/icon_button_size"

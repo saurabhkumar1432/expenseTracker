@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.R
 import com.example.expensetracker.databinding.ItemPaymentMethodModernBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class PaymentMethodModernAdapter(
     private val paymentMethods: MutableList<String>,
@@ -29,11 +28,11 @@ class PaymentMethodModernAdapter(
 
         fun bind(paymentMethod: String, position: Int) {
             binding.txtPaymentMethodName.text = paymentMethod
-            
+
             // Set appropriate icon based on payment method type
             val iconRes = getIconForPaymentMethod(paymentMethod)
             binding.imgPaymentMethodIcon.setImageResource(iconRes)
-            
+
             // More options button click - shows popup menu
             binding.btnMoreOptions.setOnClickListener { view ->
                 android.widget.PopupMenu(view.context, view).apply {

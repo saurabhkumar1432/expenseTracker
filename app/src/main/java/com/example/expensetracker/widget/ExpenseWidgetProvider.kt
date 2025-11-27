@@ -41,7 +41,7 @@ class ExpenseWidgetProvider : AppWidgetProvider() {
         ) {
             // Get transaction data
             val transactions = TransactionStore.getTransactions(context)
-            
+
             // Calculate today's expenses
             val calendar = Calendar.getInstance()
             val startOfDay = calendar.apply {
@@ -50,11 +50,11 @@ class ExpenseWidgetProvider : AppWidgetProvider() {
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
             }.timeInMillis
-            
+
             val todayExpenses = transactions
                 .filter { it.type == TransactionType.DEBIT && it.time >= startOfDay }
                 .sumOf { it.amount }
-            
+
             // Calculate this week's expenses
             val startOfWeek = Calendar.getInstance().apply {
                 set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
@@ -63,11 +63,11 @@ class ExpenseWidgetProvider : AppWidgetProvider() {
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
             }.timeInMillis
-            
+
             val weekExpenses = transactions
                 .filter { it.type == TransactionType.DEBIT && it.time >= startOfWeek }
                 .sumOf { it.amount }
-            
+
             // Calculate this month's expenses
             val startOfMonth = Calendar.getInstance().apply {
                 set(Calendar.DAY_OF_MONTH, 1)
@@ -76,39 +76,43 @@ class ExpenseWidgetProvider : AppWidgetProvider() {
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
             }.timeInMillis
-            
+
             val monthExpenses = transactions
                 .filter { it.type == TransactionType.DEBIT && it.time >= startOfMonth }
                 .sumOf { it.amount }
-            
+
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.widget_expense_tracker)
-            
+
             // Update widget values
             views.setTextViewText(R.id.txtTodayAmount, "₹${todayExpenses.toInt()}")
             views.setTextViewText(R.id.txtWeekAmount, "₹${weekExpenses.toInt()}")
             views.setTextViewText(R.id.txtMonthAmount, "₹${monthExpenses.toInt()}")
-            
+
             // Set up click listeners
             val intent = Intent(context, MainActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(
-                context, 0, intent,
+                context,
+                0,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             views.setOnClickPendingIntent(R.id.txtTodayAmount, pendingIntent)
             views.setOnClickPendingIntent(R.id.btnQuickAdd, pendingIntent)
-            
+
             // Refresh button
             val refreshIntent = Intent(context, ExpenseWidgetProvider::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
             }
             val refreshPendingIntent = PendingIntent.getBroadcast(
-                context, 0, refreshIntent,
+                context,
+                0,
+                refreshIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             views.setOnClickPendingIntent(R.id.btnRefresh, refreshPendingIntent)
-            
+
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }

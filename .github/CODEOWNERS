@@ -1,0 +1,13 @@
+# Code owners for automatic review requests
+
+# App Kotlin files
+/app/ @saurabhkumar1432
+*.kt @saurabhkumar1432
+
+# Gradle config & workflows
+/build.gradle.kts @saurabhkumar1432
+/.github/workflows/ @saurabhkumar1432
+
+# Docs and markdown
+/docs/ @saurabhkumar1432
+README.md @saurabhkumar1432
