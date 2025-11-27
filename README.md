@@ -8,10 +8,11 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 ![Offline](https://img.shields.io/badge/Mode-Offline-red.svg)
 [![Release](https://img.shields.io/github/v/release/saurabhkumar1432/expenseTracker)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)
 [![Download](https://img.shields.io/github/downloads/saurabhkumar1432/expenseTracker/total)](https://github.com/saurabhkumar1432/expenseTracker/releases)
+[![CI](https://github.com/saurabhkumar1432/expenseTracker/actions/workflows/pr-check.yml/badge.svg)](https://github.com/saurabhkumar1432/expenseTracker/actions/workflows/pr-check.yml)
 
 ## 📥 Download
 
-**[⬇️ Download Latest APK (v2.0.0)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
+**[⬇️ Download Latest APK (v2.1.0)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
 
 **Quick Install:**
 1. Download `app-debug.apk` from the latest release
@@ -32,7 +33,8 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 - 🏷️ **Categories** - 10 default categories with custom colors (Food, Transport, Shopping, etc.)
 - 🔍 **Smart Filtering** - Filter by payment method, category, search, and date range
 - 💵 **Budget Management** - Set monthly budgets per category with progress tracking
-- 📱 **Home Screen Widget** - Quick view of daily, weekly, and monthly expenses
+- � **CSV Export** - Export all transactions to CSV with summary statistics
+- �📱 **Home Screen Widget** - Quick view of daily, weekly, and monthly expenses
 - 🌓 **Dark Mode** - Full dark theme support with system integration
 
 ### User Experience
@@ -310,7 +312,14 @@ This project is for personal use and learning purposes.
 
 ## 📈 Version History
 
-### v2.0 (October 2025)
+### v2.1.0 (November 2025)
+- 📤 **CSV Export** - Export transactions to CSV with summary
+- 📅 **Monthly Budgets** - Enhanced budget system with month tracking
+- 🔄 **CI/CD Pipeline** - Automated testing with ktlint, detekt, lint
+- 🚀 **Production Releases** - Automated APK signing and changelog
+- 🔒 **Security Scanning** - CodeQL integration for vulnerability detection
+
+### v2.0.0 (October 2025)
 - ✨ Added category system with 10 default categories
 - ✨ Implemented budget management feature
 - ✨ Added home screen widget
@@ -320,7 +329,7 @@ This project is for personal use and learning purposes.
 - 🎨 Material Design 3 upgrade
 - 🌓 Dark mode support
 
-### v1.0 (August 2025)
+### v1.0.0 (August 2025)
 - 🎉 Initial release
 - ✅ Basic income/expense tracking
 - ✅ Payment method management
@@ -332,7 +341,7 @@ This project is for personal use and learning purposes.
 Potential features for future versions:
 - 📊 Charts and analytics
 - 📅 Recurring transactions
-- 📤 Export to CSV/PDF
+- � Export to PDF
 - ☁️ Optional cloud backup
 - 🔔 Budget notifications
 - 💱 Multi-currency support

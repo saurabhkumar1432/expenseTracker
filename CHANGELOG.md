@@ -5,6 +5,37 @@ All notable changes to the Expense Tracker project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-11-28
+
+### Added
+- 📤 **CSV Export** - Export all transactions to CSV file with full details
+- 📊 **Export Summary** - View total income, expenses, and balance before exporting
+- 📅 **Monthly Budget System** - Enhanced budget management with month-specific tracking
+- 🔄 **CI/CD Pipeline** - Automated code quality checks on every PR
+  - KtLint for Kotlin code style enforcement
+  - Detekt for static code analysis
+  - Android Lint for best practices
+- 🚀 **Production Release Workflow** - Automated APK building with:
+  - APK signing support (when keys configured)
+  - Automatic changelog extraction
+  - SHA-256 hash for APK verification
+  - Version-named APK files (ExpenseTracker-v2.1.0.apk)
+- 📋 **PR Templates** - Standardized pull request workflow
+- 🔒 **CodeQL Security Scanning** - Automated security vulnerability detection
+
+### Changed
+- 🔄 Code formatting improvements across all Kotlin files
+- 🔄 Import statements organized alphabetically
+- 🔄 Consistent whitespace and indentation
+
+### Technical
+- 📦 Added ktlint (v11.6.0) Gradle plugin
+- 📦 Added detekt (v1.23.6) Gradle plugin
+- 📦 Created lint-baseline.xml for existing lint issues
+- 📦 Added .editorconfig for consistent formatting
+- 📦 Created detekt.yml configuration
+- 📦 GitHub Actions workflows for CI/CD
+
 ## [2.0.0] - 2025-10-02
 
 ### Added
