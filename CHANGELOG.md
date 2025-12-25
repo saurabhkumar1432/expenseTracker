@@ -5,6 +5,14 @@ All notable changes to the Expense Tracker project will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2025-11-28
+
+### Fixed
+- 🐛 **APK Installation Issue** - Fixed release APK not installing on devices
+  - Signing configuration now properly validates all required credentials
+  - Falls back to debug signing when release signing is not configured
+  - Ensures APKs are always installable (debug-signed if release keys unavailable)
+
 ## [2.2.0] - 2025-11-28
 
 ### Changed
