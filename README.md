@@ -12,7 +12,7 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 
 ## 📥 Download
 
-**[⬇️ Download Latest APK (v2.2.0)](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
+**[⬇️ Download Latest APK](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
 
 **Quick Install:**
 1. Download `app-debug.apk` from the latest release
