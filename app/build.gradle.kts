@@ -15,6 +15,7 @@ android {
         targetSdk = 34
         versionCode = 230
         versionName = "2.3.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -22,12 +23,18 @@ android {
         create("release") {
             val keystorePath = System.getenv("SIGNING_KEYSTORE_PATH")
             val keystoreFile = if (keystorePath != null) file(keystorePath) else null
+            val storePass = System.getenv("SIGNING_STORE_PASSWORD")
+            val alias = System.getenv("SIGNING_KEY_ALIAS")
+            val keyPass = System.getenv("SIGNING_KEY_PASSWORD")
 
-            if (keystoreFile != null && keystoreFile.exists()) {
+            // Only configure signing if ALL required values are present
+            if (keystoreFile != null && keystoreFile.exists() &&
+                !storePass.isNullOrBlank() && !alias.isNullOrBlank() && !keyPass.isNullOrBlank()
+            ) {
                 storeFile = keystoreFile
-                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
-                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+                storePassword = storePass
+                keyAlias = alias
+                keyPassword = keyPass
             }
         }
     }
@@ -41,8 +48,13 @@ android {
                 "proguard-rules.pro",
             )
             val signingConfigRelease = signingConfigs.getByName("release")
+            // Use release signing if properly configured, otherwise fall back to debug signing
+            // This ensures APKs are always installable (debug-signed if release signing unavailable)
             if (signingConfigRelease.storeFile != null && signingConfigRelease.storeFile!!.exists()) {
                 signingConfig = signingConfigRelease
+            } else {
+                // Fall back to debug signing config for installable APKs
+                signingConfig = signingConfigs.getByName("debug")
             }
         }
         debug {
