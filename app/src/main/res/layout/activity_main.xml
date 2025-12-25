@@ -46,8 +46,8 @@
                     style="@style/Widget.Material3.Button.IconButton"
                     android:layout_width="@dimen/icon_button_size"
                     android:layout_height="@dimen/icon_button_size"
-                    app:icon="@drawable/ic_money"
-                    app:iconTint="@color/white"
+                    app:icon="@drawable/ic_budget_custom"
+                    app:iconTint="@null"
                     app:backgroundTint="@color/transparent"
                     app:iconSize="20dp"
                     android:contentDescription="Budget Management" />

@@ -4,40 +4,69 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="@dimen/dialog_padding">
+    android:maxHeight="@dimen/dialog_max_height">
 
-    <TextView
+    <!-- Fixed Header -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Select Category"
-        android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginBottom="8dp" />
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dialog_padding"
+        android:paddingTop="@dimen/dialog_padding">
 
-    <TextView
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Category"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+            android:textColor="?attr/colorOnSurface"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose a category to set budget limit"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:layout_marginBottom="16dp" />
+
+    </LinearLayout>
+
+    <!-- Scrollable Content -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Choose a category to set budget limit"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:layout_marginBottom="24dp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:paddingHorizontal="@dimen/dialog_padding"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false">
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroupCategories"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:singleSelection="true"
-        app:chipSpacingHorizontal="8dp"
-        app:chipSpacingVertical="8dp">
-        <!-- Chips will be added programmatically -->
-    </com.google.android.material.chip.ChipGroup>
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp"
+            android:paddingBottom="8dp">
+            <!-- Chips will be added programmatically -->
+        </com.google.android.material.chip.ChipGroup>
 
+    </ScrollView>
+
+    <!-- Fixed Footer with Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="end"
-        android:layout_marginTop="24dp">
+        android:paddingHorizontal="@dimen/dialog_padding"
+        android:paddingTop="12dp"
+        android:paddingBottom="@dimen/dialog_padding"
+        android:background="?attr/colorSurface"
+        android:elevation="4dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCancelCategory"
@@ -47,6 +76,7 @@
             android:text="Cancel"
             android:textSize="@dimen/button_text_size"
             android:minHeight="@dimen/button_min_height"
+            android:minWidth="72dp"
             android:paddingHorizontal="@dimen/button_padding_horizontal"
             android:paddingVertical="@dimen/button_padding_vertical"
             android:layout_marginEnd="8dp" />
@@ -58,6 +88,7 @@
             android:text="Continue"
             android:textSize="@dimen/button_text_size"
             android:minHeight="@dimen/button_min_height"
+            android:minWidth="88dp"
             android:paddingHorizontal="@dimen/button_padding_horizontal"
             android:paddingVertical="@dimen/button_padding_vertical"
             android:enabled="false" />

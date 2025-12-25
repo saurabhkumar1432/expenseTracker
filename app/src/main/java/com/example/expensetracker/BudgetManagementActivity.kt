@@ -113,6 +113,54 @@ class BudgetManagementActivity : AppCompatActivity() {
 
         adapter.notifyDataSetChanged()
         updateEmptyState()
+        updateBudgetSummary()
+    }
+
+    private fun updateBudgetSummary() {
+        // Calculate totals from budget items
+        val totalBudget = budgetItems.sumOf { it.budgetAmount }
+        val totalUtilized = budgetItems.sumOf { it.spentAmount }
+        val remaining = totalBudget - totalUtilized
+
+        // Update UI
+        binding.txtTotalBudget.text = "₹${totalBudget.toInt()}"
+        binding.txtTotalUtilized.text = "₹${totalUtilized.toInt()}"
+
+        // Update remaining text with color coding
+        if (remaining >= 0) {
+            binding.txtBudgetRemaining.text = "₹${remaining.toInt()} remaining"
+            binding.txtBudgetRemaining.setTextColor(getColor(R.color.credit_green))
+        } else {
+            binding.txtBudgetRemaining.text = "₹${(-remaining).toInt()} over budget"
+            binding.txtBudgetRemaining.setTextColor(getColor(R.color.debit_red))
+        }
+
+        // Update progress bar
+        val percentage = if (totalBudget > 0) {
+            ((totalUtilized / totalBudget) * 100).toInt().coerceIn(0, 100)
+        } else {
+            0
+        }
+        binding.progressTotalBudget.progress = percentage
+
+        // Color code progress bar based on usage
+        when {
+            percentage >= 100 -> {
+                binding.progressTotalBudget.setIndicatorColor(getColor(R.color.debit_red))
+                binding.txtTotalUtilized.setTextColor(getColor(R.color.debit_red))
+            }
+            percentage >= 80 -> {
+                binding.progressTotalBudget.setIndicatorColor(getColor(R.color.md_theme_light_error))
+                binding.txtTotalUtilized.setTextColor(getColor(R.color.md_theme_light_error))
+            }
+            else -> {
+                binding.progressTotalBudget.setIndicatorColor(getColor(R.color.credit_green))
+                binding.txtTotalUtilized.setTextColor(getColor(android.R.color.darker_gray))
+            }
+        }
+
+        // Show/hide summary card based on whether there are budgets
+        binding.cardBudgetSummary.visibility = if (budgetItems.isEmpty()) View.GONE else View.VISIBLE
     }
 
     private fun updateEmptyState() {
