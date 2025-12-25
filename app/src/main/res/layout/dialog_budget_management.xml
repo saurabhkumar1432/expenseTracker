@@ -76,44 +76,54 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Responsive Button Layout - Wraps on small screens -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end">
+        android:orientation="vertical">
 
+        <!-- First row: Remove Budget (left aligned) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRemoveBudget"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/button_min_height"
-            android:text="Remove Budget"
+            android:text="Remove"
             android:textSize="@dimen/button_text_size"
             android:minHeight="@dimen/button_min_height"
-            android:paddingHorizontal="@dimen/button_padding_horizontal"
-            android:paddingVertical="@dimen/button_padding_vertical"
+            android:minWidth="80dp"
             android:textColor="?attr/colorError" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancelBudget"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_min_height"
-            android:text="Cancel"
-            android:textSize="@dimen/button_text_size"
-            android:minHeight="@dimen/button_min_height"
-            android:paddingHorizontal="@dimen/button_padding_horizontal"
-            android:paddingVertical="@dimen/button_padding_vertical" />
+        <!-- Second row: Cancel and Save (right aligned) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="4dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSaveBudget"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/button_min_height"
-            android:text="Save"
-            android:textSize="@dimen/button_text_size"
-            android:minHeight="@dimen/button_min_height"
-            android:paddingHorizontal="@dimen/button_padding_horizontal"
-            android:paddingVertical="@dimen/button_padding_vertical" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelBudget"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_min_height"
+                android:text="Cancel"
+                android:textSize="@dimen/button_text_size"
+                android:minHeight="@dimen/button_min_height"
+                android:minWidth="80dp"
+                android:paddingHorizontal="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveBudget"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/button_min_height"
+                android:text="Save"
+                android:textSize="@dimen/button_text_size"
+                android:minHeight="@dimen/button_min_height"
+                android:minWidth="80dp"
+                android:paddingHorizontal="16dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

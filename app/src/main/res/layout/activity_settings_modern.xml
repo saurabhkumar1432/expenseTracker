@@ -144,7 +144,7 @@
                     <ImageView
                         android:layout_width="@dimen/icon_large"
                         android:layout_height="@dimen/icon_large"
-                        android:src="@drawable/ic_currency"
+                        android:src="@drawable/ic_cash_bundle"
                         app:tint="?attr/colorPrimary"
                         android:background="@drawable/circle_background"
                         android:backgroundTint="?attr/colorPrimaryContainer"

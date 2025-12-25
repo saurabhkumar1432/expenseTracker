@@ -49,7 +49,7 @@
                     <ImageView
                         android:layout_width="@dimen/icon_large"
                         android:layout_height="@dimen/icon_large"
-                        android:src="@drawable/ic_currency"
+                        android:src="@drawable/ic_cash_bundle"
                         app:tint="?attr/colorPrimary"
                         android:background="@drawable/circle_background"
                         android:backgroundTint="?attr/colorPrimaryContainer"
@@ -129,6 +129,120 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Budget Summary Card - Total Budget & Total Utilized -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardBudgetSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                style="?attr/materialCardViewOutlinedStyle"
+                app:cardCornerRadius="16dp"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
+
+                    <!-- Summary Row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <!-- Total Budget -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Budget"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:id="@+id/txtTotalBudget"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₹0"
+                                android:textAppearance="?attr/textAppearanceTitleLarge"
+                                android:textColor="?attr/colorPrimary"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <!-- Vertical Divider -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="?attr/colorOutline"
+                            android:layout_marginVertical="8dp" />
+
+                        <!-- Total Utilized -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Total Utilized"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="?attr/colorOnSurfaceVariant"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:id="@+id/txtTotalUtilized"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₹0"
+                                android:textAppearance="?attr/textAppearanceTitleLarge"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Progress Bar for Overall Budget -->
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progressTotalBudget"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/progress_bar_height"
+                        android:layout_marginTop="12dp"
+                        app:indicatorColor="?attr/colorPrimary"
+                        app:trackColor="?attr/colorSurfaceVariant"
+                        app:trackCornerRadius="@dimen/corner_radius_small"
+                        android:max="100"
+                        android:progress="0" />
+
+                    <!-- Remaining Amount -->
+                    <TextView
+                        android:id="@+id/txtBudgetRemaining"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="₹0 remaining"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:gravity="center"
+                        android:layout_marginTop="8dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- Budgets List -->
             <TextView
                 android:layout_width="wrap_content"
@@ -159,7 +273,7 @@
                 <ImageView
                     android:layout_width="@dimen/empty_state_icon"
                     android:layout_height="@dimen/empty_state_icon"
-                    android:src="@drawable/ic_currency"
+                    android:src="@drawable/ic_cash_bundle"
                     app:tint="?attr/colorOnSurfaceVariant"
                     android:alpha="0.6"
                     android:contentDescription="@string/desc_budget"
