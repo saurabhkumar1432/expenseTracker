@@ -13,8 +13,9 @@ android {
         applicationId = "com.example.expensetracker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 221
-        versionName = "2.2.1"
+        versionCode = 230
+        versionName = "2.3.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
