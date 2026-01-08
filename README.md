@@ -1,5 +1,5 @@
-[![CI](https://github.com/USERNAME/expenseTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/expenseTracker/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/USERNAME/expenseTracker?include_prereleases)](https://github.com/USERNAME/expenseTracker/releases)
+[![CI](https://github.com/saurabhkumar1432/expenseTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/saurabhkumar1432/expenseTracker/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/saurabhkumar1432/expenseTracker?include_prereleases)](https://github.com/saurabhkumar1432/expenseTracker/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -19,7 +19,7 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 
 ### Google Play Store (Recommended)
 
-<a href="https://play.google.com/store/apps/details?id=com.example.expensetracker">
+<a href="https://play.google.com/store/apps/details?id=com.saurabhkumar.expensetracker">
   <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"/>
 </a>
 

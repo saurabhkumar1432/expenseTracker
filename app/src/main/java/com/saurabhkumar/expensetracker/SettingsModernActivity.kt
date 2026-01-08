@@ -9,12 +9,12 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.saurabhkumar.expensetracker.data.Prefs
 import com.saurabhkumar.expensetracker.databinding.ActivitySettingsModernBinding
 import com.saurabhkumar.expensetracker.databinding.DialogAddEditPaymentMethodBinding
 import com.saurabhkumar.expensetracker.ui.PaymentMethodModernAdapter
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 
 class SettingsModernActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsModernBinding

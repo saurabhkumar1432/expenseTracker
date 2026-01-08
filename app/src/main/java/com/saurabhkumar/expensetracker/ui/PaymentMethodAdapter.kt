@@ -3,9 +3,9 @@ package com.saurabhkumar.expensetracker.ui
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.saurabhkumar.expensetracker.R
 import com.saurabhkumar.expensetracker.databinding.ItemPaymentMethodBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class PaymentMethodAdapter(
     private val paymentMethods: MutableList<String>,

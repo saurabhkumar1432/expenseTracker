@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.saurabhkumar.expensetracker.data.Prefs
 import com.saurabhkumar.expensetracker.data.TransactionStore
 import com.saurabhkumar.expensetracker.utils.ExportUtils
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SettingsActivity : AppCompatActivity() {
     private val paymentMethods = mutableListOf<String>()

@@ -82,7 +82,7 @@ STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(kt|
 if [ -n "$STAGED_FILES" ]; then
     for pattern in "${SECRET_PATTERNS[@]}"; do
         # Use git show to get staged content
-        MATCHES=$(echo "$STAGED_FILES" | xargs -I {} sh -c 'git show ":{}' 2>/dev/null | grep -iE "$pattern" || true)
+        MATCHES=$(echo "$STAGED_FILES" | xargs -I {} sh -c 'git show ":{}"' 2>/dev/null | grep -iE "$pattern" || true)
         if [ -n "$MATCHES" ]; then
             echo -e "${RED}❌ ERROR: Potential secret found matching pattern: $pattern${NC}"
             echo "$MATCHES" | head -5

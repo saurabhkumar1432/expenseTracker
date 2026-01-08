@@ -97,7 +97,7 @@ dependencies {
 
 detekt {
     // Use the centralized detekt config
-    config = files("$rootDir/config/detekt/detekt.yml")
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     allRules = false
 }
