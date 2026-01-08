@@ -1,0 +1,5 @@
+• Enhanced budget management with category tracking
+• Improved home screen widget with daily, weekly & monthly views  
+• CSV export with comprehensive summary statistics
+• UI refinements and Material Design 3 polish
+• Performance improvements and bug fixes

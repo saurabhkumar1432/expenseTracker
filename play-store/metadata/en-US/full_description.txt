@@ -1,0 +1,38 @@
+Expense Tracker is your comprehensive personal finance companion that helps you take control of your money. Whether you're budgeting for the month, tracking daily expenses, or analyzing your spending habits, this app has everything you need.
+
+<b>Key Features:</b>
+
+📊 <b>Smart Expense Tracking</b>
+• Quickly log expenses with just a few taps
+• Categorize transactions automatically
+• Add notes and receipts to any expense
+• Track both income and expenses
+
+💰 <b>Budget Management</b>
+• Set monthly or weekly budgets
+• Get alerts when approaching budget limits
+• View remaining budget at a glance
+• Create category-specific budgets
+
+📈 <b>Insightful Analytics</b>
+• Visual charts and graphs of spending patterns
+• Monthly and yearly expense reports
+• Category breakdown analysis
+• Track spending trends over time
+
+🔒 <b>Privacy First</b>
+• All data stored locally on your device
+• No account required
+• No ads or tracking
+• Your financial data stays private
+
+✨ <b>Additional Features</b>
+• Clean, intuitive Material Design interface
+• Dark mode support
+• Export data as CSV
+• Multiple currency support
+• Recurring expense tracking
+
+Take the first step towards financial freedom. Download Expense Tracker today and start managing your money smarter!
+
+<i>Questions or feedback? We'd love to hear from you!</i>

@@ -1,49 +1,56 @@
-# Contributing to expenseTracker
+# Contributing Guidelines
 
-Thank you for contributing! This project uses pull requests and automated checks.
+Thank you for your interest in contributing to our Android applications! We are dedicated to keeping our projects open source and high quality.
 
-## Development workflow
-- Fork the repository and create a branch (feature/your-feature or fix/short-description).
-- Keep changes focused and scoped to a single purpose.
-- Rebase or keep your branch up to date with `main` before opening a PR.
+## 📁 Repository Standards
 
-## Local checks to run before opening a PR
-1. Install JDK 17 and Android SDK.
-2. Build the project:
-   - Windows (PowerShell): `./gradlew assembleDebug`
-3. Run unit tests:
-   - `./gradlew testDebugUnitTest`
-4. Run Android Lint:
-   - `./gradlew lintDebug`
-5. Generate Jacoco coverage locally:
-   - `./gradlew jacocoTestReport`
+Before contributing, please read:
 
-## Linting and formatting
-We recommend adding ktlint and detekt to your local environment:
-- ktlint: https://ktlint.dev/
-- detekt: https://github.com/detekt/detekt
+👉 **[BRANCH_STRATEGY.md](./BRANCH_STRATEGY.md)** - Branching and release workflow
 
-CI will run lint and unit tests on every PR. Ensure your PR passes the CI checks.
+## 🛠️ Getting Started
 
-## Security
-If you discover a security issue, see SECURITY.md for private reporting instructions.
+1. **Fork the repository** you want to work on.
+2. **Clone** your fork locally.
+3. **Set up your environment**:
+    - JDK 17
+    - Android Studio Hedgehog or newer
+    - Check `local.properties.example` in the specific project for required keys.
 
-## Releases & changelog
-- Update CHANGELOG.md when adding features or making breaking changes.
-- Releases are created automatically when code is merged into `main`. The version is determined by `versionName` in `app/build.gradle.kts`.
+## 🔄 Development Workflow
 
-### Secrets for Signing (Maintainers only)
+1. **Create a Branch**:
+   **Always branch from `develop`, never `main`!**
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/amazing-feature
+   ```
 
-To enable signed releases, the following secrets must be set in the GitHub repository:
+2. **Make Changes**:
+   - Follow the architecture defined in the project's `README.md`.
+   - Ensure you add unit tests for logic changes.
+   - Run `gradlew lint` to check for style issues.
 
-*   `SIGNING_KEYSTORE_BASE64`: The content of your keystore file encoded in Base64.
-    *   Run `base64 -w 0 release.keystore > keystore.b64` to generate this.
-*   `SIGNING_STORE_PASSWORD`: The password for the keystore.
-*   `SIGNING_KEY_ALIAS`: The alias of the key.
-*   `SIGNING_KEY_PASSWORD`: The password for the key.
+3. **Commit Messages**:
+   We follow [Conventional Commits](https://www.conventionalcommits.org/):
+   - `feat: add new login screen`
+   - `fix: resolve crash on startup`
+   - `docs: update readme`
 
-## PR checklist
-- Tests for new behavior
-- Follow code style
-- Documentation updated
-- Assign reviewers and link related issues
+4. **Pull Request**:
+   - Push your branch to GitHub.
+   - **Open a Pull Request against the `develop` branch.**
+   - Fill out the PR template completely.
+
+## 🐛 Reporting Bugs
+
+Please use the **Bug Report** issue template when reporting bugs. Include:
+- Device model and Android version
+- Steps to reproduce
+- Screenshots or screen recordings
+- Logs (if available)
+
+## ⚖️ License
+
+By contributing, you agree that your contributions will be licensed under the MIT License defined in the root of the repository.

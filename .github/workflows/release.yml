@@ -2,158 +2,157 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - "app/**"
-      - "build.gradle.kts"
-      - "settings.gradle.kts"
-      - "gradle/**"
-      - ".github/workflows/release.yml"
+    tags:
+      - 'v*'
   workflow_dispatch:
-
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.2.3)'
+        required: false
+        type: string
 
 permissions:
   contents: write
 
-env:
-  JAVA_VERSION: "17"
-  JAVA_DISTRIBUTION: "temurin"
-
 jobs:
   release:
-    name: Build and Release
+    name: Build & Release
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-      - name: Extract version
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Get version info
         id: version
         run: |
-          VERSION_NAME=$(grep 'versionName' app/build.gradle.kts | head -1 | cut -d'"' -f2)
-          VERSION_CODE=$(grep 'versionCode' app/build.gradle.kts | head -1 | grep -oE '[0-9]+')
-          echo "name=$VERSION_NAME" >> $GITHUB_OUTPUT
-          echo "code=$VERSION_CODE" >> $GITHUB_OUTPUT
-          echo "tag=v$VERSION_NAME" >> $GITHUB_OUTPUT
-
-      - name: Check existing release
-        id: check
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if gh release view "${{ steps.version.outputs.tag }}" > /dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
+          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts || echo "1")
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts || echo "1.0")
+          
+          # Use manual version if provided
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION_NAME="${{ github.event.inputs.version }}"
           fi
+          
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          RELEASE_TAG="v${VERSION_NAME}"
+          
+          echo "version_code=${VERSION_CODE}" >> $GITHUB_OUTPUT
+          echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
+          echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
+          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Decode Keystore
-        if: steps.check.outputs.exists == 'false'
+        if: ${{ env.KEYSTORE_FILE != '' }}
         env:
-            ENCODED_STRING: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
         run: |
-            if [ ! -z "$ENCODED_STRING" ]; then
-              echo $ENCODED_STRING | base64 -d > app/release.keystore
-            fi
+          echo "$KEYSTORE_FILE" | base64 -d > app/release.keystore
 
-      - name: Run checks
-        if: steps.check.outputs.exists == 'false'
-        run: ./gradlew lintRelease testReleaseUnitTest --parallel
-
-      - name: Build APK
-        if: steps.check.outputs.exists == 'false'
+      - name: Build Release APK
+        run: ./gradlew :app:assembleRelease --no-daemon
         env:
-          SIGNING_KEYSTORE_PATH: app/release.keystore
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        run: ./gradlew assembleRelease
+          SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Prepare APK
-        if: steps.check.outputs.exists == 'false'
-        id: apk
-        run: |
-          APK=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
-          FINAL="app/build/outputs/apk/release/ExpenseTracker-${{ steps.version.outputs.tag }}.apk"
-          mv "$APK" "$FINAL"
-          echo "path=$FINAL" >> $GITHUB_OUTPUT
-          echo "size=$(du -h $FINAL | cut -f1)" >> $GITHUB_OUTPUT
-          echo "sha=$(sha256sum $FINAL | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+      - name: Build Release AAB
+        run: ./gradlew :app:bundleRelease --no-daemon
+        env:
+          SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Generate notes
-        if: steps.check.outputs.exists == 'false'
+      - name: Prepare Release Assets
+        id: assets
         run: |
-          VERSION="${{ steps.version.outputs.name }}"
-          TAG="${{ steps.version.outputs.tag }}"
+          APP_NAME="${GITHUB_REPOSITORY#*/}"
+          VERSION="${{ steps.version.outputs.version_name }}"
           
-          awk -v ver="$VERSION" '
-            /^## \[/ { if (found) exit; if (index($0, "[" ver "]")) found=1 }
-            found
-          ' CHANGELOG.md > notes.md
-          
-          if [ ! -s notes.md ]; then
-            echo "## Release $TAG" > notes.md
-            echo "" >> notes.md
-            echo "See [CHANGELOG.md](CHANGELOG.md) for details." >> notes.md
+          # Find and rename APK
+          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
+          if [ -n "$APK_PATH" ]; then
+            APK_NAME="${APP_NAME}-v${VERSION}.apk"
+            cp "$APK_PATH" "${APK_NAME}"
+            echo "apk_path=${APK_NAME}" >> $GITHUB_OUTPUT
           fi
           
-          cat >> notes.md << 'NOTES_EOF'
+          # Find and rename AAB
+          AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" | head -1)
+          if [ -n "$AAB_PATH" ]; then
+            AAB_NAME="${APP_NAME}-v${VERSION}.aab"
+            cp "$AAB_PATH" "${AAB_NAME}"
+            echo "aab_path=${AAB_NAME}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate Release Notes
+        id: notes
+        run: |
+          cat > release_notes.md << EOF
+          # Release ${{ steps.version.outputs.release_tag }}
+          
+          ## 📦 Downloads
+          - **APK**: For direct installation on Android devices
+          - **AAB**: For Play Store upload
+          
+          ## 📋 Version Info
+          - **Version Name:** ${{ steps.version.outputs.version_name }}
+          - **Version Code:** ${{ steps.version.outputs.version_code }}
+          - **Commit:** ${{ steps.version.outputs.short_sha }}
+          - **Build Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## 📝 Recent Changes
+          $(git log --oneline -10)
           
           ---
-          
-          ### Download Info
-          
-          | Property | Value |
-          |----------|-------|
-          | **Size** | ${{ steps.apk.outputs.size }} |
-          | **Min SDK** | 24 (Android 7.0) |
-          | **Target SDK** | 34 (Android 14) |
-          | **Version Code** | ${{ steps.version.outputs.code }} |
-          
-          <details>
-          <summary>SHA-256</summary>
-          
-          ```
-          ${{ steps.apk.outputs.sha }}
-          ```
-          </details>
-          NOTES_EOF
+          See [CHANGELOG.md](CHANGELOG.md) for full version history.
+          EOF
 
-      - name: Create release
-        if: steps.check.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v2
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.version.outputs.tag }}
-          name: ExpenseTracker ${{ steps.version.outputs.tag }}
-          body_path: notes.md
-          files: ${{ steps.apk.outputs.path }}
-          draft: true
-          prerelease: ${{ contains(steps.version.outputs.name, '-') }}
+          tag_name: ${{ steps.version.outputs.release_tag }}
+          name: Release ${{ steps.version.outputs.release_tag }}
+          body_path: release_notes.md
+          files: |
+            ${{ steps.assets.outputs.apk_path }}
+            ${{ steps.assets.outputs.aab_path }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Summary
+      - name: Clean up
         if: always()
         run: |
-          if [ "${{ steps.check.outputs.exists }}" == "true" ]; then
-            echo "### Skipped" >> $GITHUB_STEP_SUMMARY
-            echo "Release ${{ steps.version.outputs.tag }} already exists." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### Released" >> $GITHUB_STEP_SUMMARY
-            echo "Version: ${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
-          fi
+          rm -f release_notes.md
+          rm -f app/release.keystore

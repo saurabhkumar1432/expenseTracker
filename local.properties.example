@@ -1,0 +1,27 @@
+# Android SDK location - update this to your local SDK path
+# Windows example: sdk.dir=C\:\\Users\\YourName\\AppData\\Local\\Android\\Sdk
+# macOS example: sdk.dir=/Users/YourName/Library/Android/sdk
+# Linux example: sdk.dir=/home/YourName/Android/Sdk
+sdk.dir=YOUR_ANDROID_SDK_PATH
+
+# Optional: NDK location (if using native code)
+# ndk.dir=YOUR_ANDROID_NDK_PATH
+
+# ============================================
+# API Keys and Secrets
+# ============================================
+# IMPORTANT: Copy this file to 'local.properties' and fill in your values
+# NEVER commit local.properties to version control!
+
+# Example API keys (uncomment and fill as needed):
+# MAPS_API_KEY=your_google_maps_api_key
+# FIREBASE_API_KEY=your_firebase_api_key
+
+# ============================================
+# Release Signing (for local release builds)
+# ============================================
+# For CI/CD builds, these are provided via GitHub Secrets
+# SIGNING_STORE_FILE=path/to/your/keystore.jks
+# SIGNING_STORE_PASSWORD=your_store_password
+# SIGNING_KEY_ALIAS=your_key_alias
+# SIGNING_KEY_PASSWORD=your_key_password

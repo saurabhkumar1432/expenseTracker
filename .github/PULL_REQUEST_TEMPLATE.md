@@ -1,21 +1,41 @@
-## Summary
+## 📝 Description
+Brief description of the changes in this PR.
 
-Closes: # (issue number if applicable)
+## 🔗 Related Issue
+Fixes #(issue number)
 
-### Description
-Short summary of changes and why.
+## 🧪 Type of Change
+- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
+- [ ] ✨ New feature (non-breaking change that adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] 📚 Documentation update
+- [ ] 🔧 Refactoring (no functional changes)
+- [ ] 🧹 Chore (dependency updates, build config, etc.)
 
-### Checklist
-- [ ] CI build passes (PR CI)
-- [ ] Unit tests added / updated
-- [ ] Lint & static analysis OK
-- [ ] Code coverage not decreased (or explained)
-- [ ] Documentation / CHANGELOG updated
-- [ ] Reviewer(s) requested / CODEOWNERS assigned
-- [ ] No sensitive data added
+## 📸 Screenshots (if applicable)
+| Before | After |
+|--------|-------|
+| image  | image |
 
-### How to test
-Steps to reproduce / testing notes.
+## ✅ Checklist
+- [ ] My code follows the project's style guidelines
+- [ ] I have performed a self-review of my code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] I have updated the CHANGELOG.md
 
-### Screenshots (if applicable)
+## 📋 Testing Instructions
+1. Step 1
+2. Step 2
+3. Step 3
+
+## 📱 Tested On
+- [ ] Emulator (API level: ___)
+- [ ] Physical device (model: ___)
+
+## 📝 Additional Notes
+Any additional information that reviewers should know.
 

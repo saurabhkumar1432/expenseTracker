@@ -1,32 +1,38 @@
 ---
-name: Bug report
-about: Report a bug in Expense Tracker
+name: 🐛 Bug Report
+about: Report a bug to help us improve
 title: '[BUG] '
-labels: 'bug'
-assignees: 'saurabhkumar1432'
-
+labels: bug, needs-triage
+assignees: ''
 ---
 
-**Describe the bug**
+## 📝 Describe the Bug
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Open the app
-2. Navigate to '...'
-3. Tap on '...'
+## 🔄 Steps to Reproduce
+1. Go to '...'
+2. Click on '...'
+3. Scroll down to '...'
 4. See error
 
-**Expected behavior**
+## ✅ Expected Behavior
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+## ❌ Actual Behavior
+A clear and concise description of what actually happened.
+
+## 📱 Device Information
+- **Device:** [e.g., Samsung Galaxy S21]
+- **Android Version:** [e.g., Android 13]
+- **App Version:** [e.g., 1.2.3]
+
+## 📸 Screenshots
 If applicable, add screenshots to help explain your problem.
 
-**Device Information:**
- - Device: [e.g. Samsung Galaxy S23, Pixel 7]
- - Android Version: [e.g. Android 14]
- - App Version: [e.g. 2.1.0]
+## 📋 Additional Context
+Add any other context about the problem here.
 
-**Additional context**
-Add any other context about the problem here (logs, crash reports, etc.).
+## 📎 Logs (if applicable)
+```
+Paste any relevant logs here
+```

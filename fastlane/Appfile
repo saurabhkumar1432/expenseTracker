@@ -1,0 +1,5 @@
+json_key_file("play-store-credentials.json")
+package_name("com.saurabhkumar.expensetracker")
+
+# For more information about the Appfile, see:
+# https://docs.fastlane.tools/advanced/#appfile

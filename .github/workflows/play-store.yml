@@ -1,0 +1,149 @@
+name: Deploy to Play Store
+
+on:
+  push:
+    branches: [ develop ]
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Release track'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+
+permissions:
+  contents: read
+
+# Ensure only one deployment runs at a time
+concurrency:
+  group: play-store-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Play Store
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Only run if secrets are configured
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/develop') || github.event_name == 'release' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate Secrets
+        run: |
+          if [ -z "${{ secrets.KEYSTORE_FILE }}" ]; then
+            echo "❌ ERROR: KEYSTORE_FILE secret is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}" ]; then
+            echo "❌ ERROR: PLAY_STORE_SERVICE_ACCOUNT secret is not set"
+            exit 1
+          fi
+          echo "✅ All required secrets are configured"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper/
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Decode Keystore
+        env:
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+        run: |
+          echo "$KEYSTORE_FILE" | base64 -d > app/release.keystore
+          echo "✅ Keystore decoded successfully"
+
+      - name: Build Signed AAB
+        run: ./gradlew :app:bundleRelease --no-daemon
+        env:
+          SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Decode Service Account
+        env:
+          PLAY_STORE_SERVICE_ACCOUNT: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}
+        run: |
+          echo "$PLAY_STORE_SERVICE_ACCOUNT" | base64 -d > play-store-credentials.json
+          echo "✅ Service account credentials decoded"
+
+      - name: Determine Track
+        id: track
+        run: |
+          echo "Event: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          
+          if [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            echo "track=internal" >> $GITHUB_OUTPUT
+            echo "📦 Deploying to INTERNAL track (develop branch)"
+          elif [ "${{ github.event_name }}" == "release" ]; then
+            if [ "${{ github.event.release.prerelease }}" == "true" ]; then
+              echo "track=beta" >> $GITHUB_OUTPUT
+              echo "📦 Deploying to BETA track (prerelease)"
+            else
+              echo "track=production" >> $GITHUB_OUTPUT
+              echo "🚀 Deploying to PRODUCTION track (full release)"
+            fi
+          elif [ -n "${{ github.event.inputs.track }}" ]; then
+            echo "track=${{ github.event.inputs.track }}" >> $GITHUB_OUTPUT
+            echo "📦 Deploying to ${{ github.event.inputs.track }} track (manual)"
+          else
+            echo "track=internal" >> $GITHUB_OUTPUT
+            echo "📦 Deploying to INTERNAL track (default)"
+          fi
+
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: play-store-credentials.json
+          packageName: com.saurabhkumar.expensetracker
+          releaseFiles: app/build/outputs/bundle/release/*.aab
+          track: ${{ steps.track.outputs.track }}
+          status: completed
+          changesNotSentForReview: false
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Track | ${{ steps.track.outputs.track }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | com.saurabhkumar.expensetracker |" >> $GITHUB_STEP_SUMMARY
+          echo "| Trigger | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Clean up
+        if: always()
+        run: |
+          rm -f app/release.keystore
+          rm -f play-store-credentials.json
+          echo "🧹 Cleaned up sensitive files"

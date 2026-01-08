@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.expensetracker"
+    namespace = "com.saurabhkumar.expensetracker"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.expensetracker"
+        applicationId = "com.saurabhkumar.expensetracker"
         minSdk = 24
         targetSdk = 34
         versionCode = 230
@@ -97,7 +97,7 @@ dependencies {
 
 detekt {
     // Use the centralized detekt config
-    config = files("$rootDir/config/detekt/detekt.yml")
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     allRules = false
 }
