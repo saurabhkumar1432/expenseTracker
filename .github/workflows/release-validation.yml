@@ -12,6 +12,8 @@ jobs:
     name: Validate Release Readiness
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Only run when actually targeting main (prevents running from HEAD branch on other PRs)
+    if: github.base_ref == 'main'
 
     steps:
       - name: Verify Source Branch
