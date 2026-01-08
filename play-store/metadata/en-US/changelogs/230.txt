@@ -1,5 +1,25 @@
-• Enhanced budget management with category tracking
-• Improved home screen widget with daily, weekly & monthly views  
-• CSV export with comprehensive summary statistics
-• UI refinements and Material Design 3 polish
-• Performance improvements and bug fixes
+🎉 Welcome to Expense Tracker!
+
+Take control of your money with:
+
+💰 Smart Tracking
+• 1-tap expense logging
+• Category sorting
+• Track income & spending
+
+📊 Budgeting
+• Set monthly budgets
+• Visual progress bars
+• Over-budget alerts
+
+📈 Analytics
+• Detailed spending charts
+• Monthly reports
+• Category breakdown
+
+🔒 100% Private
+• Offline local storage
+• No account needed
+• No ads, no tracking
+
+Start your journey to financial freedom!
