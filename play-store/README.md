@@ -16,6 +16,21 @@ play-store/
             └── default.txt        # Default changelog for all versions
 ```
 
+## 📄 Privacy Policy & Legal Docs (GitHub Pages)
+
+We automatically generate a hosted Privacy Policy and Terms of Service using the files in the `/docs` folder.
+
+### Setup Instructions
+1. Go to repository **Settings > Pages**.
+2. Set **Source** to `Deploy from a branch`.
+3. Select branch `main` (or `master`) and folder `/docs`.
+4. Click **Save**.
+
+### Public URLs
+Once deployed, use these URLs in Google Play Console:
+- **Privacy Policy:** `https://<username>.github.io/<repo-name>/privacy-policy.html`
+- **Terms of Service:** `https://<username>.github.io/<repo-name>/terms-of-service.html`
+
 ## Updating Metadata
 
 ### Title (title.txt)
