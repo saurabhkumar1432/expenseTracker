@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.saurabhkumar.expensetracker.data.Prefs
 import com.saurabhkumar.expensetracker.data.Transaction
 import com.saurabhkumar.expensetracker.data.TransactionStore
@@ -17,8 +19,6 @@ import com.saurabhkumar.expensetracker.databinding.ActivityMainBinding
 import com.saurabhkumar.expensetracker.ui.FilterAdapter
 import com.saurabhkumar.expensetracker.ui.FilterOption
 import com.saurabhkumar.expensetracker.ui.TransactionAdapter
-import com.google.android.material.button.MaterialButtonToggleGroup
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -637,7 +637,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Add transaction
-            TransactionStore.addTransaction(this, amount, reason, mode, category, selectedType)
+            TransactionStore.addTransaction(
+                this,
+                TransactionStore.TransactionInput(amount, reason, mode, category, selectedType)
+            )
             refreshData()
             dialog.dismiss()
 
@@ -813,11 +816,13 @@ class MainActivity : AppCompatActivity() {
         ).setAction("UNDO") {
             TransactionStore.addTransaction(
                 this,
-                transaction.amount,
-                transaction.reason,
-                transaction.mode,
-                transaction.category,
-                transaction.type
+                TransactionStore.TransactionInput(
+                    transaction.amount,
+                    transaction.reason,
+                    transaction.mode,
+                    transaction.category,
+                    transaction.type
+                )
             )
             refreshData()
         }.show()

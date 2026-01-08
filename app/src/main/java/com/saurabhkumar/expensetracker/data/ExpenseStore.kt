@@ -14,17 +14,30 @@ object TransactionStore {
 
     private fun file(ctx: Context): File = File(ctx.filesDir, FILE_NAME)
 
+    data class TransactionInput(
+        val amount: Double,
+        val reason: String,
+        val mode: String,
+        val category: String,
+        val type: TransactionType
+    )
+
     // New addTransaction includes category
     fun addTransaction(
         ctx: Context,
-        amount: Double,
-        reason: String,
-        mode: String,
-        category: String,
-        type: TransactionType
+        input: TransactionInput
     ): Transaction {
         val now = System.currentTimeMillis()
-        val transaction = Transaction(idSeed.incrementAndGet(), amount, reason.trim(), mode, category, type, now)
+        val transaction =
+            Transaction(
+                idSeed.incrementAndGet(),
+                input.amount,
+                input.reason.trim(),
+                input.mode,
+                input.category,
+                input.type,
+                now
+            )
         writeAppend(ctx, transaction)
         return transaction
     }

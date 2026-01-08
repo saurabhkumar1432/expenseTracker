@@ -4,10 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.saurabhkumar.expensetracker.data.Prefs
-import com.saurabhkumar.expensetracker.databinding.ActivityOnboardingModernBinding
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.saurabhkumar.expensetracker.data.Prefs
+import com.saurabhkumar.expensetracker.databinding.ActivityOnboardingModernBinding
 
 class OnboardingModernActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOnboardingModernBinding
