@@ -92,7 +92,7 @@ jobs:
         env:
           PLAY_STORE_SERVICE_ACCOUNT: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}
         run: |
-          echo "$PLAY_STORE_SERVICE_ACCOUNT" > play-store-credentials.json
+          echo "$PLAY_STORE_SERVICE_ACCOUNT" | base64 -d > play-store-credentials.json
           echo "✅ Service account credentials decoded"
 
       - name: Determine Track

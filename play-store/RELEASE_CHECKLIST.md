@@ -52,8 +52,7 @@ Ensure these secrets are configured in GitHub repository settings:
 | `KEYSTORE_PASSWORD` | Keystore password | [ ] Configured |
 | `KEY_ALIAS` | Key alias name | [ ] Configured |
 | `KEY_PASSWORD` | Key password | [ ] Configured |
-| `PLAY_STORE_SERVICE_ACCOUNT` | Google Play API JSON key (base64) | [ ] Configured |
-| `PACKAGE_NAME` | App package name (`com.example.expensetracker`) | [ ] Configured |
+| `PLAY_STORE_SERVICE_ACCOUNT` | Base64 encoded Google Play API JSON key | [ ] Configured |
 
 ### Creating Keystore Secret
 ```powershell

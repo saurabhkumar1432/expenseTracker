@@ -84,7 +84,15 @@ base64 path/to/your-release.keystore | xclip      # Linux
 7. Back in Play Console, grant the service account these permissions:
    - **Release to production, exclude devices, and use Play App Signing**
    - **Manage testing tracks and edit tester lists**
-8. Copy the **entire JSON file content** into the `PLAY_STORE_SERVICE_ACCOUNT` secret
+8. **Base64 encode** the JSON file and add to `PLAY_STORE_SERVICE_ACCOUNT` secret:
+   ```powershell
+   # Windows PowerShell
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("service-account.json")) | Set-Clipboard
+   ```
+   ```bash
+   # macOS/Linux
+   base64 -i service-account.json | pbcopy
+   ```
 
 ### Step 3: Verify Setup
 
