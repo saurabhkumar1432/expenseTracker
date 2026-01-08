@@ -1,5 +1,5 @@
-[![CI](https://github.com/USERNAME/expenseTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/expenseTracker/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/USERNAME/expenseTracker?include_prereleases)](https://github.com/USERNAME/expenseTracker/releases)
+[![CI](https://github.com/saurabhkumar1432/expenseTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/saurabhkumar1432/expenseTracker/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/saurabhkumar1432/expenseTracker?include_prereleases)](https://github.com/saurabhkumar1432/expenseTracker/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
