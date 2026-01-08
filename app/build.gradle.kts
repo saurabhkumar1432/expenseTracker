@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.saurabhkumar.expensetracker"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.saurabhkumar.expensetracker"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 230
         versionName = "2.3.0"
 
