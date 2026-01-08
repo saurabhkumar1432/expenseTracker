@@ -39,16 +39,42 @@ captures/
 modules.xml
 .DS_Store
 
-# Keystore files
-# Uncomment the following lines if you want to ignore your keystore files
-# *.jks
-# *.keystore
+# Keystore files - NEVER commit these!
+*.jks
+*.keystore
+release.keystore
 
-# Google Services (uncomment if you want to ignore)
-# google-services.json
+# Google Services - contains API keys
+google-services.json
+
+# Play Store credentials - NEVER commit!
+play-store-credentials.json
+*.p12
+*.pem
+service-account*.json
+*-*.json
+zyphersoftwares*.json
+
+# Environment files
+.env
+.env.*
+*.env
+
+# Fastlane sensitive files
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
 
 # C/C++ mixed projects
 .cxx/
 cmake/
 *~
 *.swp
+
+# Secrets / credentials patterns
+*secret*
+*credentials*
+!**/ISSUE_TEMPLATE/**
+!CONTRIBUTING.md
+!SECURITY.md

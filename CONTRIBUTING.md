@@ -4,16 +4,9 @@ Thank you for your interest in contributing to our Android applications! We are 
 
 ## 📁 Repository Standards
 
-All projects in this organization follow a strict structure and set of standards. Before contributing, please read:
+Before contributing, please read:
 
-👉 **[BRANCH_STRATEGY.md](./BRANCH_STRATEGY.md)** - **READ THIS FIRST FOR BRANCHING RULES**
-👉 **[ORGANIZATION_STANDARDS.md](./ORGANIZATION_STANDARDS.md)**
-
-This document outlines:
-- Project structure
-- Coding conventions (Kotlin, Compose)
-- Branching strategies
-- Release workflows
+👉 **[BRANCH_STRATEGY.md](./BRANCH_STRATEGY.md)** - Branching and release workflow
 
 ## 🛠️ Getting Started
 

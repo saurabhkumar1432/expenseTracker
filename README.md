@@ -1,3 +1,8 @@
+[![CI](https://github.com/USERNAME/expenseTracker/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/expenseTracker/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/USERNAME/expenseTracker?include_prereleases)](https://github.com/USERNAME/expenseTracker/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
 # 💰 Expense Tracker
 
 A modern, fully offline Android expense tracker with Material Design 3, featuring intelligent filtering, budget management, and home screen widget support.
@@ -12,18 +17,34 @@ A modern, fully offline Android expense tracker with Material Design 3, featurin
 
 ## 📥 Download
 
+### Google Play Store (Recommended)
+
+<a href="https://play.google.com/store/apps/details?id=com.example.expensetracker">
+  <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"/>
+</a>
+
+*Coming soon to Google Play Store*
+
+### Direct Download (APK)
+
 **[⬇️ Download Latest APK](https://github.com/saurabhkumar1432/expenseTracker/releases/latest)**
 
 **Quick Install:**
-1. Download `app-debug.apk` from the latest release
+1. Download `expenseTracker-vX.X.X.apk` from the latest release
 2. Enable "Install from Unknown Sources" in your Android settings
 3. Open the APK and install
 4. Launch the app and complete the quick onboarding!
 
+### Build from Source
+
+See [Getting Started](#-getting-started) section for build instructions.
+
 **Requirements:**
 - Android 7.0 (API 24) or higher
-- ~2 MB storage space
+- ~5 MB storage space
 - No internet connection required
+
+**Privacy:** Your data stays on your device. See our [Privacy Policy](play-store/PRIVACY_POLICY.md) for details.
 
 ## ✨ Features
 
