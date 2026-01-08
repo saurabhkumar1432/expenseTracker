@@ -28,10 +28,9 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy to Play Store
+    name: Deploy via Fastlane
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    # Only run if secrets are configured
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/develop') || github.event_name == 'release' }}
 
     steps:
@@ -60,6 +59,15 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Setup Ruby for Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: gem install fastlane
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
@@ -79,14 +87,6 @@ jobs:
         run: |
           echo "$KEYSTORE_FILE" | base64 -d > app/release.keystore
           echo "✅ Keystore decoded successfully"
-
-      - name: Build Signed AAB
-        run: ./gradlew :app:bundleRelease --no-daemon
-        env:
-          SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
-          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Decode Service Account
         env:
@@ -120,23 +120,28 @@ jobs:
             echo "📦 Deploying to INTERNAL track (default)"
           fi
 
-      - name: Upload to Play Store
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJson: play-store-credentials.json
-          packageName: com.saurabhkumar.expensetracker
-          releaseFiles: app/build/outputs/bundle/release/*.aab
-          track: ${{ steps.track.outputs.track }}
-          status: completed
-          changesNotSentForReview: false
+      - name: Deploy with Fastlane
+        env:
+          SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          TRACK="${{ steps.track.outputs.track }}"
+          echo "🚀 Running: fastlane $TRACK"
+          fastlane $TRACK
 
       - name: Deployment Summary
         run: |
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts)
+          
           echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Track | ${{ steps.track.outputs.track }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | $VERSION_NAME ($VERSION_CODE) |" >> $GITHUB_STEP_SUMMARY
           echo "| Package | com.saurabhkumar.expensetracker |" >> $GITHUB_STEP_SUMMARY
           echo "| Trigger | ${{ github.event_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY

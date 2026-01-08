@@ -43,24 +43,61 @@ platform :android do
     )
   end
 
-  desc "Deploy to internal testing track"
+  # Helper method to get current version code from build.gradle.kts
+  def get_version_code
+    gradle_file = File.read("../app/build.gradle.kts")
+    version_code = gradle_file.match(/versionCode\s*=\s*(\d+)/)[1].to_i
+    version_code
+  end
+
+  # Helper method to check if changelog exists
+  def ensure_changelog_exists(version_code)
+    changelog_path = "../play-store/metadata/en-US/changelogs/#{version_code}.txt"
+    default_path = "../play-store/metadata/en-US/changelogs/default.txt"
+    
+    unless File.exist?(changelog_path)
+      if File.exist?(default_path)
+        UI.message("📝 No changelog for #{version_code}, using default.txt")
+        FileUtils.cp(default_path, changelog_path)
+      else
+        UI.message("📝 Creating default changelog for #{version_code}")
+        File.write(changelog_path, "Bug fixes and performance improvements.")
+      end
+    end
+  end
+
+  desc "Deploy to internal testing track (triggered by develop branch)"
   lane :internal do
+    version_code = get_version_code
+    UI.message("📦 Deploying version code: #{version_code} to INTERNAL")
+    
+    ensure_changelog_exists(version_code)
+    
     # Build the release AAB
     gradle(task: "bundleRelease")
     
-    # Upload to Play Store internal track
+    # Upload to Play Store internal track with metadata
     upload_to_play_store(
       track: "internal",
       aab: "app/build/outputs/bundle/release/app-release.aab",
       skip_upload_metadata: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      metadata_path: "./play-store/metadata"
+      metadata_path: "./play-store/metadata",
+      release_status: "completed",
+      version_code: version_code
     )
+    
+    UI.success("✅ Successfully deployed to Internal track!")
   end
 
   desc "Deploy to alpha testing track"
   lane :alpha do
+    version_code = get_version_code
+    UI.message("📦 Deploying version code: #{version_code} to ALPHA")
+    
+    ensure_changelog_exists(version_code)
+    
     gradle(task: "bundleRelease")
     
     upload_to_play_store(
@@ -69,12 +106,21 @@ platform :android do
       skip_upload_metadata: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      metadata_path: "./play-store/metadata"
+      metadata_path: "./play-store/metadata",
+      release_status: "completed",
+      version_code: version_code
     )
+    
+    UI.success("✅ Successfully deployed to Alpha track!")
   end
 
-  desc "Deploy to beta testing track"
+  desc "Deploy to beta testing track (triggered by GitHub prerelease)"
   lane :beta do
+    version_code = get_version_code
+    UI.message("📦 Deploying version code: #{version_code} to BETA")
+    
+    ensure_changelog_exists(version_code)
+    
     gradle(task: "bundleRelease")
     
     upload_to_play_store(
@@ -83,22 +129,35 @@ platform :android do
       skip_upload_metadata: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      metadata_path: "./play-store/metadata"
+      metadata_path: "./play-store/metadata",
+      release_status: "completed",
+      version_code: version_code
     )
+    
+    UI.success("✅ Successfully deployed to Beta track!")
   end
 
-  desc "Deploy to production"
+  desc "Deploy to production (triggered by GitHub release)"
   lane :production do
+    version_code = get_version_code
+    UI.message("🚀 Deploying version code: #{version_code} to PRODUCTION")
+    
+    ensure_changelog_exists(version_code)
+    
     gradle(task: "bundleRelease")
     
     upload_to_play_store(
       track: "production",
       aab: "app/build/outputs/bundle/release/app-release.aab",
       skip_upload_metadata: false,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      metadata_path: "./play-store/metadata"
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      metadata_path: "./play-store/metadata",
+      release_status: "completed",
+      version_code: version_code
     )
+    
+    UI.success("🎉 Successfully deployed to Production!")
   end
 
   desc "Promote internal to beta"
@@ -111,6 +170,8 @@ platform :android do
       skip_upload_metadata: true,
       skip_upload_changelogs: false
     )
+    
+    UI.success("✅ Promoted from Internal to Beta!")
   end
 
   desc "Promote beta to production"
@@ -123,9 +184,11 @@ platform :android do
       skip_upload_metadata: true,
       skip_upload_changelogs: false
     )
+    
+    UI.success("🎉 Promoted from Beta to Production!")
   end
 
-  desc "Upload metadata only (no build)"
+  desc "Upload metadata and screenshots only (no build)"
   lane :metadata do
     upload_to_play_store(
       skip_upload_apk: true,
@@ -134,21 +197,26 @@ platform :android do
       skip_upload_screenshots: false,
       metadata_path: "./play-store/metadata"
     )
+    
+    UI.success("✅ Metadata and assets uploaded!")
   end
 
   desc "Validate metadata without uploading"
   lane :validate do
+    gradle(task: "bundleRelease")
+    
     upload_to_play_store(
       track: "internal",
       validate_only: true,
       aab: "app/build/outputs/bundle/release/app-release.aab",
       metadata_path: "./play-store/metadata"
     )
+    
+    UI.success("✅ Validation passed!")
   end
 
   # Error handling
   error do |lane, exception|
-    # Notify on error (can integrate with Slack, etc.)
-    puts "Error in lane #{lane}: #{exception.message}"
+    UI.error("❌ Error in lane #{lane}: #{exception.message}")
   end
 end

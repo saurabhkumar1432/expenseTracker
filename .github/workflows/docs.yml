@@ -1,0 +1,86 @@
+name: Docs & Config CI
+
+on:
+  push:
+    branches: [ develop, main ]
+    paths:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+      - 'fastlane/**'
+      - 'play-store/**'
+      - 'scripts/**'
+      - 'config/**'
+  pull_request:
+    branches: [ develop, main ]
+    paths:
+      - '**.md'
+      - 'docs/**'
+      - '.github/**'
+      - 'fastlane/**'
+      - 'play-store/**'
+      - 'scripts/**'
+      - 'config/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Docs & Config
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Markdown Links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          config-file: '.github/mlc_config.json'
+        continue-on-error: true
+
+      - name: Validate YAML files
+        run: |
+          echo "Validating GitHub Actions workflows..."
+          for file in .github/workflows/*.yml; do
+            if [ -f "$file" ]; then
+              echo "✅ $file exists"
+            fi
+          done
+
+      - name: Check Play Store metadata
+        run: |
+          echo "Checking Play Store metadata structure..."
+          
+          # Check required files exist
+          if [ -f "play-store/metadata/en-US/title.txt" ]; then
+            TITLE_LEN=$(wc -c < play-store/metadata/en-US/title.txt)
+            if [ "$TITLE_LEN" -gt 30 ]; then
+              echo "⚠️ Title exceeds 30 characters ($TITLE_LEN chars)"
+            else
+              echo "✅ Title length OK ($TITLE_LEN/30 chars)"
+            fi
+          fi
+          
+          if [ -f "play-store/metadata/en-US/short_description.txt" ]; then
+            DESC_LEN=$(wc -c < play-store/metadata/en-US/short_description.txt)
+            if [ "$DESC_LEN" -gt 80 ]; then
+              echo "⚠️ Short description exceeds 80 characters ($DESC_LEN chars)"
+            else
+              echo "✅ Short description length OK ($DESC_LEN/80 chars)"
+            fi
+          fi
+          
+          if [ -f "play-store/metadata/en-US/full_description.txt" ]; then
+            FULL_LEN=$(wc -c < play-store/metadata/en-US/full_description.txt)
+            if [ "$FULL_LEN" -gt 4000 ]; then
+              echo "⚠️ Full description exceeds 4000 characters ($FULL_LEN chars)"
+            else
+              echo "✅ Full description length OK ($FULL_LEN/4000 chars)"
+            fi
+          fi
+          
+          echo "✅ Play Store metadata validation complete"

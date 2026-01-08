@@ -1,0 +1,179 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      changelog:
+        description: 'What changed in this release? (This appears in Play Store)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Calculate New Version
+        id: version
+        run: |
+          # Extract current version
+          CURRENT_VERSION=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          CURRENT_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts)
+          
+          echo "📦 Current: $CURRENT_VERSION (code: $CURRENT_CODE)"
+          
+          # Parse version components
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          
+          # Bump based on type
+          case "${{ github.event.inputs.bump_type }}" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          NEW_CODE=$((CURRENT_CODE + 1))
+          
+          echo "🆕 New: $NEW_VERSION (code: $NEW_CODE)"
+          
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "current_code=$CURRENT_CODE" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "new_code=$NEW_CODE" >> $GITHUB_OUTPUT
+
+      - name: Update build.gradle.kts
+        run: |
+          sed -i "s/versionCode = ${{ steps.version.outputs.current_code }}/versionCode = ${{ steps.version.outputs.new_code }}/" app/build.gradle.kts
+          sed -i "s/versionName = \"${{ steps.version.outputs.current_version }}\"/versionName = \"${{ steps.version.outputs.new_version }}\"/" app/build.gradle.kts
+          
+          echo "✅ Updated build.gradle.kts"
+          grep -E "versionCode|versionName" app/build.gradle.kts
+
+      - name: Create Changelog File
+        run: |
+          mkdir -p play-store/metadata/en-US/changelogs
+          
+          # Create changelog for Play Store (500 char limit)
+          echo "${{ github.event.inputs.changelog }}" > "play-store/metadata/en-US/changelogs/${{ steps.version.outputs.new_code }}.txt"
+          
+          echo "✅ Created Play Store changelog"
+
+      - name: Update CHANGELOG.md
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          TEMP_FILE=$(mktemp)
+          
+          # Create new entry
+          cat > "$TEMP_FILE" << 'ENTRY'
+          
+          ## [${{ steps.version.outputs.new_version }}] - DATE_PLACEHOLDER
+          
+          ${{ github.event.inputs.changelog }}
+          ENTRY
+          
+          # Replace placeholder
+          sed -i "s/DATE_PLACEHOLDER/$DATE/" "$TEMP_FILE"
+          
+          # Insert after first heading
+          if grep -q "^# Changelog" CHANGELOG.md; then
+            sed -i "/^# Changelog/r $TEMP_FILE" CHANGELOG.md
+          else
+            cat "$TEMP_FILE" >> CHANGELOG.md
+          fi
+          
+          rm "$TEMP_FILE"
+          echo "✅ Updated CHANGELOG.md"
+
+      - name: Commit Changes
+        run: |
+          git add app/build.gradle.kts
+          git add play-store/metadata/en-US/changelogs/
+          git add CHANGELOG.md
+          
+          git commit -m "chore(release): prepare v${{ steps.version.outputs.new_version }}
+
+          - Bump versionCode to ${{ steps.version.outputs.new_code }}
+          - Bump versionName to ${{ steps.version.outputs.new_version }}
+          - Add changelog for Play Store"
+          
+          git push origin develop
+
+      - name: Create Release PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: develop
+          base: main
+          title: "🚀 Release v${{ steps.version.outputs.new_version }}"
+          body: |
+            ## 📦 Release v${{ steps.version.outputs.new_version }}
+            
+            **Version Code:** ${{ steps.version.outputs.new_code }}
+            
+            ### 📝 What's Changed
+            ${{ github.event.inputs.changelog }}
+            
+            ### ✅ Checklist
+            - [ ] Changelog is accurate
+            - [ ] All features tested on develop
+            - [ ] Ready for production
+            
+            ---
+            
+            **After merging:**
+            1. GitHub Release will be created automatically
+            2. Play Store production deployment will trigger
+          labels: |
+            release
+            automated
+          draft: false
+
+      - name: Summary
+        run: |
+          echo "## 🎉 Release Prepared!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| New Version | ${{ steps.version.outputs.new_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version Code | ${{ steps.version.outputs.new_code }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Bump Type | ${{ github.event.inputs.bump_type }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review the auto-created PR to main" >> $GITHUB_STEP_SUMMARY
+          echo "2. Merge when ready to release" >> $GITHUB_STEP_SUMMARY

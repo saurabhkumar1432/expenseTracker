@@ -1,4 +1,4 @@
-name: PR CI
+name: Release PR Check
 
 on:
   pull_request:
@@ -8,12 +8,23 @@ permissions:
   contents: read
 
 jobs:
-  build_and_check:
-    name: Build and Check
+  validate_release:
+    name: Validate Release Readiness
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
+      - name: Verify Source Branch
+        run: |
+          echo "PR from: ${{ github.head_ref }}"
+          if [[ "${{ github.head_ref }}" != "develop" ]]; then
+            echo "❌ ERROR: Only 'develop' branch can be merged to 'main'"
+            echo "Your branch: ${{ github.head_ref }}"
+            echo "Please merge your changes to 'develop' first."
+            exit 1
+          fi
+          echo "✅ Source branch is 'develop' - proceeding with release validation"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -26,15 +37,22 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Run checks
-        run: ./gradlew ktlintCheck detekt lintDebug testDebugUnitTest --parallel
+      - name: Run Full Test Suite
+        run: ./gradlew ktlintCheck detekt lint test --parallel
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Build Release APK (Unsigned)
+        run: ./gradlew assembleRelease
 
-      - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 7
+      - name: Validate Version
+        run: |
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts)
+          echo "📦 Version: $VERSION_NAME ($VERSION_CODE)"
+          
+          # Check changelog exists for this version
+          if [ ! -f "play-store/metadata/en-US/changelogs/${VERSION_CODE}.txt" ]; then
+            echo "⚠️ WARNING: No changelog found for version code $VERSION_CODE"
+            echo "Please create: play-store/metadata/en-US/changelogs/${VERSION_CODE}.txt"
+          else
+            echo "✅ Changelog exists for version $VERSION_CODE"
+          fi

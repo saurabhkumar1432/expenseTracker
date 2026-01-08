@@ -2,9 +2,22 @@ name: CI
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ develop ]
+    paths:
+      # Only run CI when actual app code changes
+      - 'app/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle/**'
+      - 'gradle.properties'
   pull_request:
-    branches: [ main, master, develop ]
+    branches: [ develop, main ]
+    paths:
+      - 'app/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle/**'
+      - 'gradle.properties'
 
 permissions:
   contents: read
@@ -32,27 +45,13 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper/
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Run Detekt
-        run: ./gradlew detekt --continue
+        run: ./gradlew detekt --no-daemon --continue
         continue-on-error: true
 
-      - name: Upload Detekt Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: detekt-report
-          path: app/build/reports/detekt/
-          retention-days: 7
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck --no-daemon --continue
+        continue-on-error: true
 
       - name: Build Debug APK
         run: ./gradlew :app:assembleDebug --no-daemon
@@ -61,22 +60,21 @@ jobs:
         run: ./gradlew test --no-daemon
 
       - name: Run Android Lint
-        run: ./gradlew lint --no-daemon
+        run: ./gradlew :app:lintDebug --no-daemon
 
-      - name: Upload Test Reports
-        if: failure()
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+
+      - name: Upload Reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reports
           path: |
             app/build/reports/
             build/reports/
-          retention-days: 7
-
-      - name: Upload Lint Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-results
-          path: app/build/reports/lint-results*.html
           retention-days: 7

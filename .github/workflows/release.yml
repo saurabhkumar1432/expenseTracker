@@ -1,22 +1,32 @@
-name: Release
+name: Release & Deploy
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ main ]
+    paths:
+      # ONLY trigger on actual app changes merged to main
+      - 'app/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to release (e.g., 1.2.3)'
+      skip_play_store:
+        description: 'Skip Play Store deployment'
         required: false
-        type: string
+        default: false
+        type: boolean
 
 permissions:
   contents: write
 
+# Ensure only one release runs at a time
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
-    name: Build & Release
+    name: Create Release & Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
@@ -36,7 +46,16 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Grant execute permission for gradlew
+      - name: Setup Ruby for Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: gem install fastlane
+
+      - name: Grant execute permission
         run: chmod +x ./gradlew
 
       - name: Cache Gradle packages
@@ -49,34 +68,46 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Get version info
+      - name: Get Version Info
         id: version
         run: |
-          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts || echo "1")
-          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts || echo "1.0")
+          VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          VERSION_CODE=$(grep -oP 'versionCode\s*=\s*\K\d+' app/build.gradle.kts)
+          TAG="v${VERSION_NAME}"
           
-          # Use manual version if provided
-          if [ -n "${{ github.event.inputs.version }}" ]; then
-            VERSION_NAME="${{ github.event.inputs.version }}"
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          
+          echo "📦 Version: $VERSION_NAME (code: $VERSION_CODE)"
+
+      - name: Check if Already Released
+        id: check_release
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "⚠️ Tag $TAG already exists - skipping release"
+            echo "already_released=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ New release: $TAG"
+            echo "already_released=false" >> $GITHUB_OUTPUT
           fi
-          
-          COMMIT_COUNT=$(git rev-list --count HEAD)
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          RELEASE_TAG="v${VERSION_NAME}"
-          
-          echo "version_code=${VERSION_CODE}" >> $GITHUB_OUTPUT
-          echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
-          echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
-          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
 
       - name: Decode Keystore
-        if: ${{ env.KEYSTORE_FILE != '' }}
+        if: steps.check_release.outputs.already_released == 'false'
         env:
           KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
         run: |
-          echo "$KEYSTORE_FILE" | base64 -d > app/release.keystore
+          if [ -n "$KEYSTORE_FILE" ]; then
+            echo "$KEYSTORE_FILE" | base64 -d > app/release.keystore
+            echo "✅ Keystore decoded"
+          else
+            echo "⚠️ No keystore - using debug signing"
+          fi
 
       - name: Build Release APK
+        if: steps.check_release.outputs.already_released == 'false'
         run: ./gradlew :app:assembleRelease --no-daemon
         env:
           SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
@@ -85,6 +116,7 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Build Release AAB
+        if: steps.check_release.outputs.already_released == 'false'
         run: ./gradlew :app:bundleRelease --no-daemon
         env:
           SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
@@ -93,56 +125,79 @@ jobs:
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Prepare Release Assets
+        if: steps.check_release.outputs.already_released == 'false'
         id: assets
         run: |
-          APP_NAME="${GITHUB_REPOSITORY#*/}"
           VERSION="${{ steps.version.outputs.version_name }}"
           
-          # Find and rename APK
+          # Rename APK
           APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -1)
           if [ -n "$APK_PATH" ]; then
-            APK_NAME="${APP_NAME}-v${VERSION}.apk"
-            cp "$APK_PATH" "${APK_NAME}"
-            echo "apk_path=${APK_NAME}" >> $GITHUB_OUTPUT
+            APK_NAME="ExpenseTracker-v${VERSION}.apk"
+            cp "$APK_PATH" "$APK_NAME"
+            echo "apk_path=$APK_NAME" >> $GITHUB_OUTPUT
           fi
           
-          # Find and rename AAB
+          # Rename AAB
           AAB_PATH=$(find app/build/outputs/bundle/release -name "*.aab" | head -1)
           if [ -n "$AAB_PATH" ]; then
-            AAB_NAME="${APP_NAME}-v${VERSION}.aab"
-            cp "$AAB_PATH" "${AAB_NAME}"
-            echo "aab_path=${AAB_NAME}" >> $GITHUB_OUTPUT
+            AAB_NAME="ExpenseTracker-v${VERSION}.aab"
+            cp "$AAB_PATH" "$AAB_NAME"
+            echo "aab_path=$AAB_NAME" >> $GITHUB_OUTPUT
           fi
 
-      - name: Generate Release Notes
-        id: notes
+      - name: Get Changelog
+        if: steps.check_release.outputs.already_released == 'false'
+        id: changelog
         run: |
-          cat > release_notes.md << EOF
-          # Release ${{ steps.version.outputs.release_tag }}
+          VERSION_CODE="${{ steps.version.outputs.version_code }}"
+          CHANGELOG_FILE="play-store/metadata/en-US/changelogs/${VERSION_CODE}.txt"
           
-          ## 📦 Downloads
-          - **APK**: For direct installation on Android devices
-          - **AAB**: For Play Store upload
+          if [ -f "$CHANGELOG_FILE" ]; then
+            {
+              echo 'changelog<<EOF'
+              cat "$CHANGELOG_FILE"
+              echo 'EOF'
+            } >> $GITHUB_OUTPUT
+          else
+            echo "changelog=Bug fixes and performance improvements." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Git Tag
+        if: steps.check_release.outputs.already_released == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          ## 📋 Version Info
-          - **Version Name:** ${{ steps.version.outputs.version_name }}
-          - **Version Code:** ${{ steps.version.outputs.version_code }}
-          - **Commit:** ${{ steps.version.outputs.short_sha }}
-          - **Build Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          TAG="${{ steps.version.outputs.tag }}"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
           
-          ## 📝 Recent Changes
-          $(git log --oneline -10)
-          
-          ---
-          See [CHANGELOG.md](CHANGELOG.md) for full version history.
-          EOF
+          echo "✅ Created tag: $TAG"
 
       - name: Create GitHub Release
+        if: steps.check_release.outputs.already_released == 'false'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.version.outputs.release_tag }}
-          name: Release ${{ steps.version.outputs.release_tag }}
-          body_path: release_notes.md
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body: |
+            ## 📦 Expense Tracker ${{ steps.version.outputs.tag }}
+            
+            ### 📝 What's New
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ### 📱 Downloads
+            - **APK**: Direct installation on Android devices
+            - **AAB**: For Play Store (auto-deployed)
+            
+            ### ℹ️ Version Info
+            - Version Name: ${{ steps.version.outputs.version_name }}
+            - Version Code: ${{ steps.version.outputs.version_code }}
+            - Build Date: ${{ github.event.head_commit.timestamp }}
+            
+            ---
+            📖 See [CHANGELOG.md](CHANGELOG.md) for full history.
           files: |
             ${{ steps.assets.outputs.apk_path }}
             ${{ steps.assets.outputs.aab_path }}
@@ -151,8 +206,40 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Deploy to Play Store
+        if: steps.check_release.outputs.already_released == 'false' && github.event.inputs.skip_play_store != 'true'
+        env:
+          SIGNING_KEYSTORE_PATH: ${{ github.workspace }}/app/release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          PLAY_STORE_SERVICE_ACCOUNT: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$PLAY_STORE_SERVICE_ACCOUNT" ]; then
+            echo "⚠️ Play Store credentials not configured - skipping deployment"
+            exit 0
+          fi
+          
+          echo "$PLAY_STORE_SERVICE_ACCOUNT" | base64 -d > play-store-credentials.json
+          fastlane production
+          rm -f play-store-credentials.json
+          
+          echo "🚀 Deployed to Play Store Production!"
+
       - name: Clean up
         if: always()
         run: |
-          rm -f release_notes.md
           rm -f app/release.keystore
+          rm -f play-store-credentials.json
+
+      - name: Release Summary
+        if: steps.check_release.outputs.already_released == 'false'
+        run: |
+          echo "## 🎉 Release Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ steps.version.outputs.version_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag | ${{ steps.version.outputs.tag }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| GitHub Release | ✅ Created |" >> $GITHUB_STEP_SUMMARY
+          echo "| Play Store | ✅ Deployed to Production |" >> $GITHUB_STEP_SUMMARY
