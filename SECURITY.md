@@ -34,6 +34,6 @@ We take security seriously. If you discover a security vulnerability in any of o
 
 ## Android Specific Security
 
-- We default to `minSdk = 26` (Android 8.0) to ensure modern security features.
+- We default to `minSdk = 24` (Android 7.0) to ensure modern security features.
 - We use R8/Proguard for code obfuscation on release builds.
 - Network traffic is required to use HTTPS (Cleartext traffic disabled by default).
